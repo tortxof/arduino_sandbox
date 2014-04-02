@@ -1,5 +1,6 @@
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
+const int FAN_MIN = 50;
 
 // These get set true if a (c)ool or (f)ull_stop command is received
 boolean cool = false;
@@ -7,18 +8,14 @@ boolean full_stop = false;
 
 unsigned long dry_delay = 4 * 60 * 1000; // 4 minutes in milliseconds.
 unsigned long cool_delay = 2 * 60 * 1000;
-unsigned long roast_delay = 30 * 1000;
 
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
 int fan_cool = 120;
-// 12 is fast. 20 is medium. 30 is slow.
-int intervals = 20;
-int fan_step = (fan_start - fan_end) / intervals;
-
-int heat = 0;
-int fan = 0;
+int fan_step = 1;
+int ramp_time = 12 * 60; // Time in seconds to ramp fan down.
+unsigned long roast_delay = (ramp_time * 1000) / (fan_start - fan_end); // Delay between fan speed steps.
 
 void checkCommands() {
   if (Serial.available() > 0) {
@@ -34,37 +31,65 @@ void checkCommands() {
   }
 }
 
+void updateOutput(int heat, int fan) {
+  analogWrite(FAN_PIN, fan);
+  if (heat > 0 && fan >= FAN_MIN) {
+    digitalWrite(HEAT_PIN, HIGH);
+    Serial.print('1');
+  }
+  else {
+    digitalWrite(HEAT_PIN, LOW);
+    Serial.print('0');
+  }
+  Serial.print(',');
+  Serial.println(fan);
+}
+
 void doRoast() {
+  unsigned long end_time = 0;
+
   // Spool up fan
   for (int i = 0; i <= fan_dry; i++) {
-    analogWrite(FAN_PIN, i);
+    updateOutput(0, i);
     delay(10);
   }
 
   checkCommands();
   if (full_stop) {
-    digitalWrite(HEAT_PIN, LOW);
-    analogWrite(FAN_PIN, 0);
+    updateOutput(0, 0);
     return;
   }
 
   // Turn on heat and wait for drying period.
-  unsigned long dry_end = millis() + dry_delay;
-  digitalWrite(HEAT_PIN, HIGH);
-  while (millis() < dry_end) {
-    delay(10);
+  updateOutput(1, fan_dry);
+  end_time = millis() + dry_delay;
+  while (millis() < end_time && !cool && !full_stop) {
+    delay(100);
+    checkCommands();
   }
 
   // Ramp down fan speed over time
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
-    analogWrite(FAN_PIN, i);
-    delay(roast_delay); // delay 30 seconds.
+    updateOutput(1, i);
+    end_time = millis() + roast_delay;
+    while (millis() < end_time && !cool && !full_stop) {
+      delay(100);
+      checkCommands();
+    }
+    if (cool || full_stop)
+      break;
   }
+
   // Cooling period
-  digitalWrite(HEAT_PIN, LOW);
-  analogWrite(FAN_PIN, fan_cool);
-  delay(cool_delay); // Cool for 2 minutes.
-  analogWrite(FAN_PIN, 0);
+  updateOutput(0, fan_cool);
+  end_time = millis() + cool_delay;
+  while (millis() < end_time && !full_stop) {
+    delay(100);
+    checkCommands();
+  }
+
+  // Stop
+  updateOutput(0, 0);
 }
 
 void setup() {
@@ -74,20 +99,8 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    heat = Serial.parseInt();
-    fan = Serial.parseInt();
-    if (heat > 0 && fan >= 80) {
-      digitalWrite(13, HIGH);
-    }
-    else {
-      digitalWrite(13, LOW);
-    }
-    analogWrite(11, fan);
-  }
-  delay(10);
+  if (Serial.available() > 0 && Serial.read() == 's')
+    doRoast();
+  delay(100);
 }
-
-
-
 
