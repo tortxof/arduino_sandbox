@@ -1,6 +1,10 @@
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 
+// These get set true if a (c)ool or (f)ull_stop command is received
+boolean cool = false;
+boolean full_stop = false;
+
 unsigned long dry_delay = 4 * 60 * 1000; // 4 minutes in milliseconds.
 unsigned long cool_delay = 2 * 60 * 1000;
 unsigned long roast_delay = 30 * 1000;
@@ -16,19 +20,41 @@ int fan_step = (fan_start - fan_end) / intervals;
 int heat = 0;
 int fan = 0;
 
+void checkCommands() {
+  if (Serial.available() > 0) {
+    int inByte = Serial.read();
+    switch (inByte) {
+    case 'c':
+      cool = true;
+      break;
+    case 'f':
+      full_stop = true;
+      break;
+    }
+  }
+}
+
 void doRoast() {
   // Spool up fan
   for (int i = 0; i <= fan_dry; i++) {
     analogWrite(FAN_PIN, i);
     delay(10);
   }
+
+  checkCommands();
+  if (full_stop) {
+    digitalWrite(HEAT_PIN, LOW);
+    analogWrite(FAN_PIN, 0);
+    return;
+  }
+
   // Turn on heat and wait for drying period.
   unsigned long dry_end = millis() + dry_delay;
   digitalWrite(HEAT_PIN, HIGH);
   while (millis() < dry_end) {
     delay(10);
   }
-  
+
   // Ramp down fan speed over time
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     analogWrite(FAN_PIN, i);
@@ -61,5 +87,7 @@ void loop() {
   }
   delay(10);
 }
+
+
 
 
