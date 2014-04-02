@@ -3,7 +3,8 @@ const int HEAT_PIN = 13;
 
 unsigned long dry_delay = 4 * 60 * 1000; // 4 minutes in milliseconds.
 unsigned long cool_delay = 2 * 60 * 1000;
-unsigned long roast_interval = 30 * 1000;
+unsigned long roast_delay = 30 * 1000;
+
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
@@ -22,12 +23,16 @@ void doRoast() {
     delay(10);
   }
   // Turn on heat and wait for drying period.
+  unsigned long dry_end = millis() + dry_delay;
   digitalWrite(HEAT_PIN, HIGH);
-  delay(dry_delay);
+  while (millis() < dry_end) {
+    delay(10);
+  }
+  
   // Ramp down fan speed over time
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     analogWrite(FAN_PIN, i);
-    delay(roast_interval); // delay 30 seconds.
+    delay(roast_delay); // delay 30 seconds.
   }
   // Cooling period
   digitalWrite(HEAT_PIN, LOW);
