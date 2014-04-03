@@ -6,30 +6,15 @@ const int FAN_MIN = 50;
 boolean cool = false;
 boolean full_stop = false;
 
-unsigned long dry_delay = 4 * 60 * 1000; // 4 minutes in milliseconds.
-unsigned long cool_delay = 2 * 60 * 1000;
+unsigned long dry_delay = 4UL * 60UL * 1000UL; // 4 minutes in milliseconds.
+unsigned long cool_delay = 2UL * 60UL * 1000UL;
 
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
 int fan_cool = 120;
 int fan_step = 1;
-int ramp_time = 12 * 60; // Time in seconds to ramp fan down.
-unsigned long roast_delay = (ramp_time * 1000) / (fan_start - fan_end); // Delay between fan speed steps.
-
-void checkCommands() {
-  if (Serial.available() > 0) {
-    int inByte = Serial.read();
-    switch (inByte) {
-    case 'c':
-      cool = true;
-      break;
-    case 'f':
-      full_stop = true;
-      break;
-    }
-  }
-}
+unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
 
 void updateOutput(int heat, int fan) {
   analogWrite(FAN_PIN, fan);
@@ -45,8 +30,27 @@ void updateOutput(int heat, int fan) {
   Serial.println(fan);
 }
 
+void checkCommands() {
+  while (Serial.available() > 0) {
+    int inByte = Serial.read();
+    switch (inByte) {
+    case 'c' :
+      Serial.println("cool requested");
+      cool = true;
+      break;
+    case 'f' :
+      Serial.println("full stop requested");
+      full_stop = true;
+      break;
+    }
+  }
+}
+
+
 void doRoast() {
-  unsigned long end_time = 0;
+  unsigned long end_time = 0UL;
+  cool = false;
+  full_stop = false;
 
   // Spool up fan
   for (int i = 0; i <= fan_dry; i++) {
@@ -55,15 +59,11 @@ void doRoast() {
   }
 
   checkCommands();
-  if (full_stop) {
-    updateOutput(0, 0);
-    return;
-  }
 
   // Turn on heat and wait for drying period.
   updateOutput(1, fan_dry);
   end_time = millis() + dry_delay;
-  while (millis() < end_time && !cool && !full_stop) {
+  while ((millis() < end_time) && !cool && !full_stop) {
     delay(100);
     checkCommands();
   }
@@ -72,7 +72,7 @@ void doRoast() {
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     updateOutput(1, i);
     end_time = millis() + roast_delay;
-    while (millis() < end_time && !cool && !full_stop) {
+    while ((millis() < end_time) && !cool && !full_stop) {
       delay(100);
       checkCommands();
     }
@@ -83,7 +83,7 @@ void doRoast() {
   // Cooling period
   updateOutput(0, fan_cool);
   end_time = millis() + cool_delay;
-  while (millis() < end_time && !full_stop) {
+  while ((millis() < end_time) && !full_stop) {
     delay(100);
     checkCommands();
   }
