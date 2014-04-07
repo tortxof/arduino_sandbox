@@ -135,9 +135,13 @@ void setup() {
 }
 
 void loop() {
-  while (!(lcd.readButtons() & BUTTON_RIGHT))
+  // Wait for button push
+  while (!lcd.readButtons())
     delay(100);
-  doRoast();
-  delay(100);
+  uint8_t buttons = lcd.readButtons();
+  if (buttons & BUTTON_SELECT)
+    doRoast();
+  // else if (buttons & BUTTON_RIGHT)
+    // doConfig();
 }
 
