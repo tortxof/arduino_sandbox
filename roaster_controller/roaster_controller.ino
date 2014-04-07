@@ -2,6 +2,8 @@
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
 
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
+
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 const int FAN_MIN = 50;
@@ -21,12 +23,17 @@ int fan_step = 1;
 unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
 
 void updateOutput(int heat, int fan) {
+  lcd.setCursor(0, 1);
+  lcd.print("Fan:");
+  lcd.print(fan);
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
+    lcd.print(" Heat:On");
   }
   else {
     digitalWrite(HEAT_PIN, LOW);
+    lcd.print(" Heat:Off");
   }
 }
 
@@ -80,6 +87,7 @@ void doRoast() {
 
 void setup() {
   Serial.begin(9600);
+  lcd.begin(16, 2);
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
 }
