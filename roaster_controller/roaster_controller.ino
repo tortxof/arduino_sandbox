@@ -45,7 +45,7 @@ void checkCommands() {
       break;
     }
   }
-  if (COOL_PIN == LOW) {
+  if (digitalRead(COOL_PIN) == LOW) {
     Serial.println("cool requested");
     cool = true;
   }
@@ -105,7 +105,7 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0 && Serial.read() == 's')
+  if (digitalRead(COOL_PIN) == HIGH)
     doRoast();
   delay(100);
 }
