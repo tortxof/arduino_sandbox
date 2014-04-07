@@ -27,30 +27,13 @@ void updateOutput(int heat, int fan) {
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
-    Serial.print('1');
   }
   else {
     digitalWrite(HEAT_PIN, LOW);
-    Serial.print('0');
   }
-  Serial.print(',');
-  Serial.println(fan);
 }
 
 void checkCommands() {
-  while (Serial.available() > 0) {
-    int inByte = Serial.read();
-    switch (inByte) {
-    case 'c' :
-      Serial.println("cool requested");
-      cool = true;
-      break;
-    case 'f' :
-      Serial.println("full stop requested");
-      full_stop = true;
-      break;
-    }
-  }
   if (digitalRead(COOL_PIN) == LOW) {
     if (fan_speed_written == 0) {
       fan_speed_written = 1;
@@ -108,15 +91,16 @@ void doRoast() {
 
 void setup() {
   Serial.begin(9600);
+  Serial.println(EEPROM.read(0));
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
   pinMode(COOL_PIN, INPUT_PULLUP);
 }
 
 void loop() {
-  Serial.println(EEPROM.read(0));
-  if (digitalRead(COOL_PIN) == HIGH)
-    doRoast();
+  while (digitalRead(COOL_PIN) == LOW)
+    delay(100);
+  doRoast();
   delay(100);
 }
 
