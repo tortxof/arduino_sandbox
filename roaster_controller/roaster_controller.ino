@@ -29,6 +29,7 @@ int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
 int fan_cool = 120;
+int fan_spool_step = 10;
 int fan_step = 1;
 unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
 
@@ -69,7 +70,7 @@ void doRoast() {
   lcd.setBacklight(YELLOW);
   lcd.setCursor(0, 0);
   lcd.print("Spooling up");
-  for (int i = 0; i <= fan_dry; i++) {
+  for (int i = 0; i <= fan_dry; i += fan_spool_step) {
     updateOutput(0, i);
     delay(10);
   }
@@ -127,11 +128,16 @@ void doRoast() {
 void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);
+  lcd.setBacklight(WHITE);
+  lcd.clear();
+  lcd.print("Coffee Roaster");
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
 }
 
 void loop() {
+  while (!(lcd.readButtons() & BUTTON_RIGHT))
+    delay(100);
   doRoast();
   delay(100);
 }
