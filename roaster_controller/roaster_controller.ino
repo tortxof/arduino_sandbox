@@ -1,7 +1,12 @@
+#include <EEPROM.h>
+
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 const int FAN_MIN = 50;
 const int COOL_PIN = 8;
+
+int fan_speed = 0; // Used only to write value to EEPROM on cool.
+int fan_speed_written = 0; // Only write once.
 
 // These get set true if a (c)ool or (f)ull_stop command is received
 boolean cool = false;
@@ -18,6 +23,7 @@ int fan_step = 1;
 unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
 
 void updateOutput(int heat, int fan) {
+  fan_speed = fan;
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
@@ -46,7 +52,10 @@ void checkCommands() {
     }
   }
   if (digitalRead(COOL_PIN) == LOW) {
-    Serial.println("cool requested");
+    if (fan_speed_written == 0) {
+      fan_speed_written = 1;
+      EEPROM.write(0, fan_speed);
+    }
     cool = true;
   }
 }
@@ -105,6 +114,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println(EEPROM.read(0));
   if (digitalRead(COOL_PIN) == HIGH)
     doRoast();
   delay(100);
