@@ -1,6 +1,7 @@
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 const int FAN_MIN = 50;
+const int COOL_PIN = 8;
 
 // These get set true if a (c)ool or (f)ull_stop command is received
 boolean cool = false;
@@ -43,6 +44,9 @@ void checkCommands() {
       full_stop = true;
       break;
     }
+  }
+  if (COOL_PIN == LOW) {
+    cool = true;
   }
 }
 
@@ -96,6 +100,7 @@ void setup() {
   Serial.begin(9600);
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
+  pinMode(COOL_PIN, INPUT_PULLUP);
 }
 
 void loop() {
