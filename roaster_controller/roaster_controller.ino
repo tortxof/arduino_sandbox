@@ -22,16 +22,15 @@ const int FAN_MIN = 50;
 boolean cool = false;
 boolean full_stop = false;
 
-unsigned long dry_delay = 4UL * 60UL * 1000UL; // 4 minutes in milliseconds.
-unsigned long cool_delay = 2UL * 60UL * 1000UL;
-
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
 int fan_cool = 120;
 int fan_spool_step = 10;
 int fan_step = 1;
-unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
+int dry_delay = 4 * 60; // 4 minutes in seconds
+int cool_delay = 2 * 60;
+int roast_delay = 10; // Delay between fan speed steps in second.
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
@@ -83,7 +82,7 @@ void doRoast() {
   lcd.setCursor(0, 0);
   lcd.print("Drying");
   updateOutput(1, fan_dry);
-  end_time = millis() + dry_delay;
+  end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
     delay(100);
     checkCommands();
@@ -96,7 +95,7 @@ void doRoast() {
   lcd.print("Roasting");
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     updateOutput(1, i);
-    end_time = millis() + roast_delay;
+    end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
       delay(100);
       checkCommands();
@@ -111,7 +110,7 @@ void doRoast() {
   lcd.setCursor(0, 0);
   lcd.print("Cooling");
   updateOutput(0, fan_cool);
-  end_time = millis() + cool_delay;
+  end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
     delay(100);
     checkCommands();
