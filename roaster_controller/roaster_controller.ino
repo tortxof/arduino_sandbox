@@ -46,6 +46,7 @@ void checkCommands() {
     }
   }
   if (COOL_PIN == LOW) {
+    Serial.println("cool requested");
     cool = true;
   }
 }
