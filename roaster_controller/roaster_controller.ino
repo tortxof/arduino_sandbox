@@ -1,12 +1,10 @@
-#include <EEPROM.h>
+#include <Wire.h>
+#include <Adafruit_MCP23017.h>
+#include <Adafruit_RGBLCDShield.h>
 
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 const int FAN_MIN = 50;
-const int COOL_PIN = 8;
-
-int fan_speed = 0; // Used only to write value to EEPROM on cool.
-int fan_speed_written = 0; // Only write once.
 
 // These get set true if a (c)ool or (f)ull_stop command is received
 boolean cool = false;
@@ -23,7 +21,6 @@ int fan_step = 1;
 unsigned long roast_delay = 10000UL; // Delay between fan speed steps.
 
 void updateOutput(int heat, int fan) {
-  fan_speed = fan;
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
@@ -34,15 +31,7 @@ void updateOutput(int heat, int fan) {
 }
 
 void checkCommands() {
-  if (digitalRead(COOL_PIN) == LOW) {
-    if (fan_speed_written == 0) {
-      fan_speed_written = 1;
-      EEPROM.write(0, fan_speed);
-    }
-    cool = true;
-  }
 }
-
 
 void doRoast() {
   unsigned long end_time = 0UL;
@@ -91,15 +80,11 @@ void doRoast() {
 
 void setup() {
   Serial.begin(9600);
-  Serial.println(EEPROM.read(0));
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
-  pinMode(COOL_PIN, INPUT_PULLUP);
 }
 
 void loop() {
-  while (digitalRead(COOL_PIN) == LOW)
-    delay(100);
   doRoast();
   delay(100);
 }
