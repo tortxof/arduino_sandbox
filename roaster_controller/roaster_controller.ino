@@ -38,6 +38,15 @@ void updateOutput(int heat, int fan) {
 }
 
 void checkCommands() {
+  uint8_t buttons = lcd.readButtons();
+  if (buttons) {
+    if (buttons & BUTTON_LEFT) {
+      full_stop = true;
+    }
+    if (buttons & BUTTON_RIGHT) {
+      cool = true;
+    }
+  }
 }
 
 void doRoast() {
