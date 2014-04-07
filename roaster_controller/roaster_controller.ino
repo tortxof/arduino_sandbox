@@ -4,6 +4,16 @@
 
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
+// These #defines make it easy to set the backlight color
+#define OFF 0x0
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7 
+
 const int FAN_PIN = 11;
 const int HEAT_PIN = 13;
 const int FAN_MIN = 50;
@@ -55,6 +65,10 @@ void doRoast() {
   full_stop = false;
 
   // Spool up fan
+  lcd.clear();
+  lcd.setBacklight(YELLOW);
+  lcd.setCursor(0, 0);
+  lcd.print("Spooling up");
   for (int i = 0; i <= fan_dry; i++) {
     updateOutput(0, i);
     delay(10);
@@ -63,6 +77,10 @@ void doRoast() {
   checkCommands();
 
   // Turn on heat and wait for drying period.
+  lcd.clear();
+  lcd.setBacklight(YELLOW);
+  lcd.setCursor(0, 0);
+  lcd.print("Drying");
   updateOutput(1, fan_dry);
   end_time = millis() + dry_delay;
   while ((millis() < end_time) && !cool && !full_stop) {
@@ -71,6 +89,10 @@ void doRoast() {
   }
 
   // Ramp down fan speed over time
+  lcd.clear();
+  lcd.setBacklight(RED);
+  lcd.setCursor(0, 0);
+  lcd.print("Roasting");
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     updateOutput(1, i);
     end_time = millis() + roast_delay;
@@ -83,6 +105,10 @@ void doRoast() {
   }
 
   // Cooling period
+  lcd.clear();
+  lcd.setBacklight(BLUE);
+  lcd.setCursor(0, 0);
+  lcd.print("Cooling");
   updateOutput(0, fan_cool);
   end_time = millis() + cool_delay;
   while ((millis() < end_time) && !full_stop) {
@@ -91,6 +117,10 @@ void doRoast() {
   }
 
   // Stop
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.setCursor(0, 0);
+  lcd.print("Done");
   updateOutput(0, 0);
 }
 
