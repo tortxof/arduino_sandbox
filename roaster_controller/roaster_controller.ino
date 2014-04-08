@@ -14,8 +14,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define VIOLET 0x5
 #define WHITE 0x7 
 
-const int FAN_PIN = 11;
-const int HEAT_PIN = 13;
+const int FAN_PIN = 10;
+const int HEAT_PIN = 11;
 const int FAN_MIN = 50;
 
 // These get set true if a (c)ool or (f)ull_stop command is received
@@ -175,13 +175,17 @@ void doRoast() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  // Pin 12 is ground.
+  pinMode(12, OUTPUT);
+  digitalWrite(12, LOW);
+
+  pinMode(HEAT_PIN, OUTPUT);
+  pinMode(FAN_PIN, OUTPUT);
+
   lcd.begin(16, 2);
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(" Coffee Roaster ");
-  pinMode(HEAT_PIN, OUTPUT);
-  pinMode(FAN_PIN, OUTPUT);
   delay(2000);
 }
 
