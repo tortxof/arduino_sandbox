@@ -66,7 +66,7 @@ void checkCommands() {
   }
 }
 
-int setParam(int value, char desc[]) {
+int setParam(int value, int step_size, char desc[]) {
   while (true) {
     lcd.setCursor(0, 1);
     lcd.print(desc);
@@ -74,9 +74,9 @@ int setParam(int value, char desc[]) {
     lcd.print("                ");
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_UP)
-      value++;
+      value += step_size;
     else if (buttons & BUTTON_DOWN)
-      value--;
+      value -= step_size;
     else if (buttons & BUTTON_RIGHT)
       break;
   }
@@ -89,13 +89,13 @@ void doConfig() {
   lcd.setCursor(0, 0);
   lcd.print("Configure");
 
-  fan_start = setParam(fan_start, "Fan Start: ");
-  fan_end = setParam(fan_end, "Fan End: ");
-  fan_dry = setParam(fan_dry, "Fan Dry: ");
-  fan_cool = setParam(fan_cool, "Fan Cool: ");
-  dry_delay = setParam(dry_delay, "Dry Time: ");
-  roast_delay = setParam(roast_delay, "Roast Delay: ");
-  cool_delay = setParam(cool_delay, "Cool Time: ");
+  fan_start = setParam(fan_start, 5, "Fan Start: ");
+  fan_end = setParam(fan_end, 5, "Fan End: ");
+  fan_dry = setParam(fan_dry, 5, "Fan Dry: ");
+  fan_cool = setParam(fan_cool, 5, "Fan Cool: ");
+  dry_delay = setParam(dry_delay, 10, "Dry Time: ");
+  roast_delay = setParam(roast_delay, 1, "Roast Delay: ");
+  cool_delay = setParam(cool_delay, 10, "Cool Time: ");
 
   lcd.clear();
   lcd.setCursor(0, 0);
