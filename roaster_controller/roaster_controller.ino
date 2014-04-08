@@ -36,14 +36,15 @@ void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
   lcd.print("Fan:");
   lcd.print(fan);
+  lcd.setCursor(8, 1);
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
-    lcd.print(" Heat:On");
+    lcd.print("Heat:On");
   }
   else {
     digitalWrite(HEAT_PIN, LOW);
-    lcd.print(" Heat:Off");
+    lcd.print("Heat:Off");
   }
 }
 
