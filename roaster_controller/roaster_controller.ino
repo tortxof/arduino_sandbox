@@ -14,8 +14,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define VIOLET 0x5
 #define WHITE 0x7 
 
-const int FAN_PIN = 10;
-const int HEAT_PIN = 11;
+const int FAN_PIN = 11;
+const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 
 // These get set true if a (c)ool or (f)ull_stop command is received
@@ -175,10 +175,6 @@ void doRoast() {
 }
 
 void setup() {
-  // Pin 12 is ground.
-  pinMode(12, OUTPUT);
-  digitalWrite(12, LOW);
-
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
 
