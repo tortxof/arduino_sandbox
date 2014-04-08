@@ -60,24 +60,30 @@ void checkCommands() {
   }
 }
 
+int setParam(int value, char desc[]) {
+  while (true) {
+    lcd.setCursor(0, 1);
+    lcd.print(desc);
+    lcd.print(value);
+    uint8_t buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP)
+      value++;
+    else if (buttons & BUTTON_DOWN)
+      value--;
+    else if (buttons & BUTTON_RIGHT)
+      break;
+  }
+  return value;
+}
+
 void doConfig() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.setCursor(0, 0);
   lcd.print("Configure");
 
-  while (true) {
-    lcd.setCursor(0, 1);
-    lcd.print("Fan Start: ");
-    lcd.print(fan_start);
-    uint8_t buttons = lcd.readButtons();
-    if (buttons & BUTTON_UP)
-      fan_start++;
-    else if (buttons & BUTTON_DOWN)
-      fan_start--;
-    else if (buttons & BUTTON_RIGHT)
-      break;
-  }
+  fan_start = setParam(fan_start, "Fan Start: ");
+
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.setCursor(0, 0);
