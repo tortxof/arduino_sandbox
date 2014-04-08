@@ -65,6 +65,7 @@ int setParam(int value, char desc[]) {
     lcd.setCursor(0, 1);
     lcd.print(desc);
     lcd.print(value);
+    lcd.print("                ");
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_UP)
       value++;
