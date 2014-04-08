@@ -48,6 +48,12 @@ void updateOutput(int heat, int fan) {
   }
 }
 
+void printTimeRemaining(unsigned long end_time) {
+  lcd.setCursor(12, 0);
+  lcd.print((end_time - millis()) / 1000);
+  lcd.print("    ");
+}
+
 void checkCommands() {
   uint8_t buttons = lcd.readButtons();
   if (buttons) {
@@ -122,6 +128,7 @@ void doRoast() {
   updateOutput(1, fan_dry);
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
+    printTimeRemaining(end_time);
     delay(100);
     checkCommands();
   }
@@ -135,6 +142,7 @@ void doRoast() {
     updateOutput(1, i);
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
+      printTimeRemaining(end_time);
       delay(100);
       checkCommands();
     }
@@ -150,6 +158,7 @@ void doRoast() {
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
+    printTimeRemaining(end_time);
     delay(100);
     checkCommands();
   }
