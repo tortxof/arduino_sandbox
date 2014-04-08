@@ -67,6 +67,7 @@ void checkCommands() {
 }
 
 int setParam(int value, int step_size, char desc[]) {
+  delay(250);
   while (true) {
     lcd.setCursor(0, 1);
     lcd.print(desc);
