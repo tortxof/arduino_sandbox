@@ -59,6 +59,31 @@ void checkCommands() {
   }
 }
 
+void doConfig() {
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.setCursor(0, 0);
+  lcd.print("Configure");
+
+  while (true) {
+    lcd.setCursor(0, 1);
+    lcd.print("Fan Start: ");
+    lcd.print(fan_start);
+    uint8_t buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP)
+      fan_start++;
+    else if (buttons & BUTTON_DOWN)
+      fan_start--;
+    else if (buttons & BUTTON_RIGHT)
+      break;
+  }
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.setCursor(0, 0);
+  lcd.print("Config done");
+  delay(1000);
+}
+
 void doRoast() {
   unsigned long end_time = 0UL;
   cool = false;
@@ -120,28 +145,38 @@ void doRoast() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.setCursor(0, 0);
-  lcd.print("Done");
+  lcd.print("Done roasting");
   updateOutput(0, 0);
+  while (!lcd.readButtons())
+    delay(100);
 }
 
 void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);
-  lcd.setBacklight(WHITE);
   lcd.clear();
-  lcd.print("Coffee Roaster");
+  lcd.setBacklight(WHITE);
+  lcd.print(" Coffee Roaster ");
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
+  delay(2000);
 }
 
 void loop() {
+  // Update display
+  lcd.clear();
+  lcd.setBacklight(GREEN);
+  lcd.setCursor(0, 0);
+  lcd.print("Ready");
+
   // Wait for button push
   while (!lcd.readButtons())
     delay(100);
+
   uint8_t buttons = lcd.readButtons();
   if (buttons & BUTTON_SELECT)
     doRoast();
-  // else if (buttons & BUTTON_RIGHT)
-    // doConfig();
+  else if (buttons & BUTTON_RIGHT)
+    doConfig();
 }
 
