@@ -79,7 +79,7 @@ int setParam(int value, char desc[]) {
 
 void doConfig() {
   lcd.clear();
-  lcd.setBacklight(WHITE);
+  lcd.setBacklight(VIOLET);
   lcd.setCursor(0, 0);
   lcd.print("Configure");
 
@@ -92,7 +92,6 @@ void doConfig() {
   cool_delay = setParam(cool_delay, "Cool Time: ");
 
   lcd.clear();
-  lcd.setBacklight(WHITE);
   lcd.setCursor(0, 0);
   lcd.print("Config done");
   delay(1000);
@@ -181,7 +180,7 @@ void loop() {
   lcd.clear();
   lcd.setBacklight(GREEN);
   lcd.setCursor(0, 0);
-  lcd.print("Ready");
+  lcd.print("     Ready      ");
 
   // Wait for button push
   while (!lcd.readButtons())
