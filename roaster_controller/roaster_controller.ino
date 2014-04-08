@@ -83,6 +83,12 @@ void doConfig() {
   lcd.print("Configure");
 
   fan_start = setParam(fan_start, "Fan Start: ");
+  fan_end = setParam(fan_end, "Fan End: ");
+  fan_dry = setParam(fan_dry, "Fan Dry: ");
+  fan_cool = setParam(fan_cool, "Fan Cool: ");
+  dry_delay = setParam(dry_delay, "Dry Time: ");
+  roast_delay = setParam(roast_delay, "Roast Delay: ");
+  cool_delay = setParam(cool_delay, "Cool Time: ");
 
   lcd.clear();
   lcd.setBacklight(WHITE);
