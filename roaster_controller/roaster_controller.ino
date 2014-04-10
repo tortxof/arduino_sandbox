@@ -213,6 +213,35 @@ void doRoast() {
     delay(100);
 }
 
+void doManual() {
+  int fan = 0;
+  int heat = 0;
+  lcd.clear();
+  lcd.setBacklight(BLUE);
+  lcd.print("Manual Mode");
+  while (!(lcd.readButtons() & BUTTON_SELECT)) {
+    uint8_t buttons = lcd.readButtons();
+    if (buttons & BUTTON_RIGHT) {
+      lcd.setBacklight(RED);
+      heat = 1;
+    }
+    if (buttons & BUTTON_LEFT) {
+      lcd.setBacklight(BLUE);
+      heat = 0;
+    }
+    if (buttons & BUTTON_UP)
+      fan++;
+    if (buttons & BUTTON_DOWN)
+      fan--;
+    updateOutput(heat, fan);
+    delay(10);
+  }
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.print("Manual halted.");
+  delay(1000);
+}
+
 void setup() {
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
@@ -231,15 +260,18 @@ void setup() {
 }
 
 void loop() {
+  // Define menu line
+  char menu_line[] = " Man S=Auto Cfg ";
+  menu_line[0] = byte(2);
+  menu_line[15] = byte(3);
+
   // Update display
   lcd.clear();
   lcd.setBacklight(GREEN);
   lcd.setCursor(0, 0);
   lcd.print("     Ready      ");
   lcd.setCursor(0, 1);
-  lcd.write(byte(3));
-  lcd.print("Conf ");
-  lcd.print("[S]Rst");
+  lcd.print(menu_line);
 
   // Wait for button push
   while (!lcd.readButtons())
@@ -250,5 +282,7 @@ void loop() {
     doRoast();
   else if (buttons & BUTTON_RIGHT)
     doConfig();
+  else if (buttons & BUTTON_LEFT)
+    doManual();
 }
 
