@@ -59,6 +59,7 @@ byte arrow_d[8] = {
 const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
+const int DELAY_BUTTON = 10; // Time to wait in button loops
 
 int fan_dry = 200;
 int fan_start = 160;
@@ -89,8 +90,9 @@ void updateOutput(int heat, int fan) {
 
 void printTimeRemaining(unsigned long end_time) {
   lcd.setCursor(12, 0);
-  lcd.print((end_time - millis()) / 1000);
   lcd.print("    ");
+  lcd.setCursor(12, 0);
+  lcd.print((end_time - millis()) / 1000);
 }
 
 void checkCommands(boolean *cool, boolean *full_stop) {
@@ -106,7 +108,6 @@ void checkCommands(boolean *cool, boolean *full_stop) {
 }
 
 int setParam(int value, int step_size, char desc[]) {
-  delay(250);
   while (true) {
     lcd.setCursor(0, 1);
     lcd.print(desc);
@@ -120,6 +121,7 @@ int setParam(int value, int step_size, char desc[]) {
     else if (buttons & BUTTON_RIGHT)
       break;
   }
+  delay(200);
   return value;
 }
 
@@ -169,7 +171,7 @@ void doRoast() {
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
     printTimeRemaining(end_time);
-    delay(100);
+    delay(DELAY_BUTTON);
     checkCommands(&cool, &full_stop);
   }
 
@@ -183,7 +185,7 @@ void doRoast() {
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
       printTimeRemaining(end_time);
-      delay(100);
+      delay(DELAY_BUTTON);
       checkCommands(&cool, &full_stop);
     }
     if (cool || full_stop)
@@ -199,7 +201,7 @@ void doRoast() {
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
     printTimeRemaining(end_time);
-    delay(100);
+    delay(DELAY_BUTTON);
     checkCommands(&cool, &full_stop);
   }
 
@@ -210,7 +212,7 @@ void doRoast() {
   lcd.print("Done roasting");
   updateOutput(0, 0);
   while (!lcd.readButtons())
-    delay(100);
+    delay(DELAY_BUTTON);
 }
 
 void doManual() {
@@ -234,7 +236,7 @@ void doManual() {
     if (buttons & BUTTON_DOWN)
       fan--;
     updateOutput(heat, fan);
-    delay(10);
+    delay(DELAY_BUTTON);
   }
   lcd.clear();
   lcd.setBacklight(WHITE);
@@ -275,7 +277,7 @@ void loop() {
 
   // Wait for button push
   while (!lcd.readButtons())
-    delay(100);
+    delay(DELAY_BUTTON);
 
   uint8_t buttons = lcd.readButtons();
   if (buttons & BUTTON_SELECT)
