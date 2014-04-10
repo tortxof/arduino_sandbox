@@ -90,9 +90,8 @@ void updateOutput(int heat, int fan) {
 
 void printTimeRemaining(unsigned long end_time) {
   lcd.setCursor(12, 0);
-  lcd.print("    ");
-  lcd.setCursor(12, 0);
   lcd.print((end_time - millis()) / 1000);
+  lcd.print("   ");
 }
 
 void checkCommands(boolean *cool, boolean *full_stop) {
