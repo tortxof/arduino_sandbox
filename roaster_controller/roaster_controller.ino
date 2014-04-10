@@ -240,6 +240,7 @@ void doManual() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print("Manual halted.");
+  updateOutput(0, 0);
   delay(1000);
 }
 
