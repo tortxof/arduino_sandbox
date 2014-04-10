@@ -12,7 +12,49 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define TEAL 0x6
 #define BLUE 0x4
 #define VIOLET 0x5
-#define WHITE 0x7 
+#define WHITE 0x7
+
+// Arrows
+byte arrow_l[8] = {
+  B00000,
+  B00000,
+  B00010,
+  B00110,
+  B01110,
+  B00110,
+  B00010,
+  B00000,
+};
+byte arrow_r[8] = {
+  B00000,
+  B00000,
+  B01000,
+  B01100,
+  B01110,
+  B01100,
+  B01000,
+  B00000,
+};
+byte arrow_u[8] = {
+  B00000,
+  B00000,
+  B00100,
+  B01110,
+  B11111,
+  B00000,
+  B00000,
+  B00000,
+};
+byte arrow_d[8] = {
+  B00000,
+  B00000,
+  B00000,
+  B11111,
+  B01110,
+  B00100,
+  B00000,
+  B00000,
+};
 
 const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
@@ -30,13 +72,14 @@ int roast_delay = 10; // Delay between fan speed steps in second.
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
-  lcd.print("Fan:");
+  lcd.print("Fan:    ");
+  lcd.setCursor(4, 1);
   lcd.print(fan);
   lcd.setCursor(8, 1);
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
-    lcd.print("Heat:On");
+    lcd.print("Heat:On ");
   }
   else {
     digitalWrite(HEAT_PIN, LOW);
@@ -175,6 +218,12 @@ void setup() {
   pinMode(FAN_PIN, OUTPUT);
 
   lcd.begin(16, 2);
+
+  lcd.createChar(0, arrow_u);
+  lcd.createChar(1, arrow_d);
+  lcd.createChar(2, arrow_l);
+  lcd.createChar(3, arrow_r);
+
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(" Coffee Roaster ");
@@ -187,6 +236,10 @@ void loop() {
   lcd.setBacklight(GREEN);
   lcd.setCursor(0, 0);
   lcd.print("     Ready      ");
+  lcd.setCursor(0, 1);
+  lcd.write(byte(3));
+  lcd.print("Conf ");
+  lcd.print("[S]Rst");
 
   // Wait for button push
   while (!lcd.readButtons())
