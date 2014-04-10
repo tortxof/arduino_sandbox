@@ -18,10 +18,6 @@ const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 
-// These get set true if a (c)ool or (f)ull_stop command is received
-boolean cool = false;
-boolean full_stop = false;
-
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
@@ -54,14 +50,14 @@ void printTimeRemaining(unsigned long end_time) {
   lcd.print("    ");
 }
 
-void checkCommands() {
+void checkCommands(boolean *cool, boolean *full_stop) {
   uint8_t buttons = lcd.readButtons();
   if (buttons) {
     if (buttons & BUTTON_LEFT) {
-      full_stop = true;
+      *full_stop = true;
     }
     if (buttons & BUTTON_RIGHT) {
-      cool = true;
+      *cool = true;
     }
   }
 }
@@ -106,8 +102,8 @@ void doConfig() {
 
 void doRoast() {
   unsigned long end_time = 0UL;
-  cool = false;
-  full_stop = false;
+  boolean cool = false;
+  boolean full_stop = false;
 
   // Spool up fan
   lcd.clear();
@@ -119,7 +115,7 @@ void doRoast() {
     delay(10);
   }
 
-  checkCommands();
+  checkCommands(&cool, &full_stop);
 
   // Turn on heat and wait for drying period.
   lcd.clear();
@@ -131,7 +127,7 @@ void doRoast() {
   while ((millis() < end_time) && !cool && !full_stop) {
     printTimeRemaining(end_time);
     delay(100);
-    checkCommands();
+    checkCommands(&cool, &full_stop);
   }
 
   // Ramp down fan speed over time
@@ -145,7 +141,7 @@ void doRoast() {
     while ((millis() < end_time) && !cool && !full_stop) {
       printTimeRemaining(end_time);
       delay(100);
-      checkCommands();
+      checkCommands(&cool, &full_stop);
     }
     if (cool || full_stop)
       break;
@@ -161,7 +157,7 @@ void doRoast() {
   while ((millis() < end_time) && !full_stop) {
     printTimeRemaining(end_time);
     delay(100);
-    checkCommands();
+    checkCommands(&cool, &full_stop);
   }
 
   // Stop
