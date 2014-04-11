@@ -70,6 +70,7 @@ int fan_step = 1;
 int dry_delay = 4 * 60; // 4 minutes in seconds
 int cool_delay = 2 * 60;
 int roast_delay = 10; // Delay between fan speed steps in second.
+int man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
@@ -137,6 +138,7 @@ void doConfig() {
   dry_delay = setParam(dry_delay, 10, "Dry Time: ");
   roast_delay = setParam(roast_delay, 1, "Roast Delay: ");
   cool_delay = setParam(cool_delay, 10, "Cool Time: ");
+  man_fan_step = setParam(man_fan_step, 1, "Man Fan Step: ");
 
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -230,10 +232,16 @@ void doManual() {
       lcd.setBacklight(BLUE);
       heat = 0;
     }
-    if (buttons & BUTTON_UP)
-      fan++;
-    if (buttons & BUTTON_DOWN)
-      fan--;
+    if (buttons & BUTTON_UP) {
+      fan += man_fan_step;
+      if (fan < FAN_MIN)
+        fan = FAN_MIN;
+    }
+    if (buttons & BUTTON_DOWN) {
+      fan -= man_fan_step;
+      if (fan < FAN_MIN)
+        fan = 0;
+    }
     updateOutput(heat, fan);
     delay(DELAY_BUTTON);
   }
