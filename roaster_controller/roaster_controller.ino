@@ -132,7 +132,7 @@ void doConfig() {
   lcd.print("Configure");
 
   fan_start = setParam(fan_start, 5, "Fan Start: ");
-  fan_end = setParam(fan_end, 5, "Fan End: ");
+  fan_end = setParam(fan_end, 1, "Fan End: ");
   fan_dry = setParam(fan_dry, 5, "Fan Dry: ");
   fan_cool = setParam(fan_cool, 5, "Fan Cool: ");
   dry_delay = setParam(dry_delay, 10, "Dry Time: ");
