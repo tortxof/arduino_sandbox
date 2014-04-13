@@ -74,9 +74,11 @@ int man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
-  lcd.print("Fan:    ");
+  lcd.print("Fan:");
   lcd.setCursor(4, 1);
-  lcd.print(fan);
+  char fan_string[] = "   ";
+  sprintf(fan_string, "%3d", fan);
+  lcd.print(fan_string);
   lcd.setCursor(8, 1);
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
