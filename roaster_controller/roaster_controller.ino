@@ -61,22 +61,22 @@ const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 const int DELAY_BUTTON = 10; // Time to wait in button loops
 
-int fan_dry = 200;
-int fan_start = 160;
-int fan_end = 100;
-int fan_cool = 120;
-int fan_spool_step = 10;
-int fan_step = 1;
+byte fan_dry = 200;
+byte fan_start = 160;
+byte fan_end = 100;
+byte fan_cool = 120;
+byte fan_spool_step = 10;
+byte fan_step = 1;
 int dry_delay = 4 * 60; // 4 minutes in seconds
 int cool_delay = 2 * 60;
 int roast_delay = 10; // Delay between fan speed steps in second.
-int man_fan_step = 5;
+byte man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
   lcd.print("Fan:");
   lcd.setCursor(4, 1);
-  char fan_string[] = "   ";
+  char fan_string[4];
   sprintf(fan_string, "%3d", fan);
   lcd.print(fan_string);
   lcd.setCursor(8, 1);
@@ -92,15 +92,17 @@ void updateOutput(int heat, int fan) {
 }
 
 void printTimeRemaining(unsigned long end_time) {
-  lcd.setCursor(13, 0);
-  lcd.print((end_time - millis()) / 1000);
-  lcd.print("  ");
+  char time_string[5];
+  sprintf(time_string, "%4d", (end_time - millis()) / 1000);
+  lcd.setCursor(12, 0);
+  lcd.print(time_string);
 }
 
 void printTimeElapsed(unsigned long start_time) {
-  lcd.setCursor(9, 0);
-  lcd.print((millis() - start_time) / 1000);
-  lcd.print("  ");
+  char time_string[5];
+  sprintf(time_string, "%4d", (millis() - start_time) / 1000);
+  lcd.setCursor(8, 0);
+  lcd.print(time_string);
 }
 
 void checkCommands(boolean *cool, boolean *full_stop) {
@@ -116,11 +118,17 @@ void checkCommands(boolean *cool, boolean *full_stop) {
 }
 
 int setParam(int value, int step_size, char desc[]) {
+  lcd.setCursor(0, 1);
+  lcd.print("                ");
+  lcd.setCursor(0, 1);
+  lcd.print(desc);
+  lcd.print(":");
+  char value_string[5];
   while (true) {
-    lcd.setCursor(0, 1);
-    lcd.print(desc);
-    lcd.print(value);
-    lcd.print("                ");
+    lcd.setCursor(12, 1);
+    sprintf(value_string, "%4d", value);
+    lcd.print(value_string);
+    delay(100);
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_UP)
       value += step_size;
@@ -139,14 +147,14 @@ void doConfig() {
   lcd.setCursor(0, 0);
   lcd.print("Configure");
 
-  fan_start = setParam(fan_start, 5, "Fan Start: ");
-  fan_end = setParam(fan_end, 1, "Fan End: ");
-  fan_dry = setParam(fan_dry, 5, "Fan Dry: ");
-  fan_cool = setParam(fan_cool, 5, "Fan Cool: ");
-  dry_delay = setParam(dry_delay, 10, "Dry Time: ");
-  roast_delay = setParam(roast_delay, 1, "Roast Delay: ");
-  cool_delay = setParam(cool_delay, 10, "Cool Time: ");
-  man_fan_step = setParam(man_fan_step, 1, "Man Fan Step: ");
+  fan_start = setParam(fan_start, 5, "Fan Start");
+  fan_end = setParam(fan_end, 1, "Fan End");
+  fan_dry = setParam(fan_dry, 5, "Fan Dry");
+  fan_cool = setParam(fan_cool, 5, "Fan Cool");
+  dry_delay = setParam(dry_delay, 10, "Dry Time");
+  roast_delay = setParam(roast_delay, 1, "Roast Delay");
+  cool_delay = setParam(cool_delay, 10, "Cool Time");
+  man_fan_step = setParam(man_fan_step, 1, "Man Fan Step");
 
   lcd.clear();
   lcd.setCursor(0, 0);
