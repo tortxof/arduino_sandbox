@@ -56,21 +56,21 @@ byte arrow_d[8] = {
   B00000,
 };
 
-const byte FAN_PIN = 11;
-const byte HEAT_PIN = 10;
-const byte FAN_MIN = 50;
-const byte DELAY_BUTTON = 10; // Time to wait in button loops
+const int FAN_PIN = 11;
+const int HEAT_PIN = 10;
+const int FAN_MIN = 50;
+const int DELAY_BUTTON = 10; // Time to wait in button loops
 
-byte fan_dry = 200;
-byte fan_start = 160;
-byte fan_end = 100;
-byte fan_cool = 120;
-byte fan_spool_step = 10;
-byte fan_step = 1;
+int fan_dry = 200;
+int fan_start = 160;
+int fan_end = 100;
+int fan_cool = 120;
+int fan_spool_step = 10;
+int fan_step = 1;
 int dry_delay = 4 * 60; // 4 minutes in seconds
 int cool_delay = 2 * 60;
 int roast_delay = 10; // Delay between fan speed steps in second.
-byte man_fan_step = 5;
+int man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
@@ -163,8 +163,8 @@ void doConfig() {
 }
 
 void doRoast() {
-  unsigned long end_time = 0UL;
-  unsigned long start_time = 0UL;
+  unsigned long end_time;
+  unsigned long start_time;
   boolean cool = false;
   boolean full_stop = false;
 
