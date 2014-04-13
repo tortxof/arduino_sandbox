@@ -56,10 +56,10 @@ byte arrow_d[8] = {
   B00000,
 };
 
-const int FAN_PIN = 11;
-const int HEAT_PIN = 10;
-const int FAN_MIN = 50;
-const int DELAY_BUTTON = 10; // Time to wait in button loops
+const byte FAN_PIN = 11;
+const byte HEAT_PIN = 10;
+const byte FAN_MIN = 50;
+const byte DELAY_BUTTON = 10; // Time to wait in button loops
 
 byte fan_dry = 200;
 byte fan_start = 160;
@@ -74,7 +74,7 @@ byte man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
   lcd.setCursor(0, 1);
-  lcd.print("Fan:");
+  lcd.print(F("Fan:"));
   lcd.setCursor(4, 1);
   char fan_string[4];
   sprintf(fan_string, "%3d", fan);
@@ -83,11 +83,11 @@ void updateOutput(int heat, int fan) {
   analogWrite(FAN_PIN, fan);
   if (heat > 0 && fan >= FAN_MIN) {
     digitalWrite(HEAT_PIN, HIGH);
-    lcd.print("Heat:On ");
+    lcd.print(F("Heat:On "));
   }
   else {
     digitalWrite(HEAT_PIN, LOW);
-    lcd.print("Heat:Off");
+    lcd.print(F("Heat:Off"));
   }
 }
 
@@ -117,9 +117,9 @@ void checkCommands(boolean *cool, boolean *full_stop) {
   }
 }
 
-int setParam(int value, int step_size, char desc[]) {
+int setParam(int value, int step_size, const __FlashStringHelper* desc) {
   lcd.setCursor(0, 1);
-  lcd.print("                ");
+  lcd.print(F("            "));
   lcd.setCursor(0, 1);
   lcd.print(desc);
   lcd.print(":");
@@ -145,20 +145,20 @@ void doConfig() {
   lcd.clear();
   lcd.setBacklight(VIOLET);
   lcd.setCursor(0, 0);
-  lcd.print("Configure");
+  lcd.print(F("Configure"));
 
-  fan_start = setParam(fan_start, 5, "Fan Start");
-  fan_end = setParam(fan_end, 1, "Fan End");
-  fan_dry = setParam(fan_dry, 5, "Fan Dry");
-  fan_cool = setParam(fan_cool, 5, "Fan Cool");
-  dry_delay = setParam(dry_delay, 10, "Dry Time");
-  roast_delay = setParam(roast_delay, 1, "Roast Delay");
-  cool_delay = setParam(cool_delay, 10, "Cool Time");
-  man_fan_step = setParam(man_fan_step, 1, "Man Fan Step");
+  fan_start = setParam(fan_start, 5, F("Fan Start"));
+  fan_end = setParam(fan_end, 1, F("Fan End"));
+  fan_dry = setParam(fan_dry, 5, F("Fan Dry"));
+  fan_cool = setParam(fan_cool, 5, F("Fan Cool"));
+  dry_delay = setParam(dry_delay, 10, F("Dry Time"));
+  roast_delay = setParam(roast_delay, 1, F("Roast Delay"));
+  cool_delay = setParam(cool_delay, 10, F("Cool Time"));
+  man_fan_step = setParam(man_fan_step, 1, F("Man Fan Step"));
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Config done");
+  lcd.print(F("Config done"));
   delay(1000);
 }
 
@@ -171,7 +171,7 @@ void doRoast() {
   // Spool up fan
   lcd.clear();
   lcd.setBacklight(YELLOW);
-  lcd.print("Spooling up");
+  lcd.print(F("Spooling up"));
   for (int i = 0; i <= fan_dry; i += fan_spool_step) {
     updateOutput(0, i);
     delay(10);
@@ -182,7 +182,7 @@ void doRoast() {
   // Turn on heat and wait for drying period.
   lcd.clear();
   lcd.setBacklight(YELLOW);
-  lcd.print("Drying");
+  lcd.print(F("Drying"));
   updateOutput(1, fan_dry);
   start_time = millis();
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
@@ -196,7 +196,7 @@ void doRoast() {
   // Ramp down fan speed over time
   lcd.clear();
   lcd.setBacklight(RED);
-  lcd.print("Roasting");
+  lcd.print(F("Roasting"));
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     updateOutput(1, i);
@@ -213,7 +213,7 @@ void doRoast() {
   // Cooling period
   lcd.clear();
   lcd.setBacklight(BLUE);
-  lcd.print("Cooling");
+  lcd.print(F("Cooling"));
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
@@ -226,7 +226,7 @@ void doRoast() {
   // Stop
   lcd.clear();
   lcd.setBacklight(WHITE);
-  lcd.print("Done");
+  lcd.print(F("Done"));
   printTimeElapsed(start_time);
   updateOutput(0, 0);
   while (!lcd.readButtons())
@@ -240,7 +240,7 @@ void doManual() {
 
   lcd.clear();
   lcd.setBacklight(BLUE);
-  lcd.print("Manual");
+  lcd.print(F("Manual"));
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_RIGHT) {
@@ -267,9 +267,10 @@ void doManual() {
   }
   lcd.clear();
   lcd.setBacklight(WHITE);
-  lcd.print("Manual halted.");
+  lcd.print(F("Done"));
+  printTimeElapsed(start_time);
   updateOutput(0, 0);
-  delay(1000);
+  delay(2000);
 }
 
 void setup() {
@@ -285,7 +286,7 @@ void setup() {
 
   lcd.clear();
   lcd.setBacklight(WHITE);
-  lcd.print(" Coffee Roaster ");
+  lcd.print(F(" Coffee Roaster "));
   delay(2000);
 }
 
@@ -298,7 +299,7 @@ void loop() {
   // Update display
   lcd.clear();
   lcd.setBacklight(GREEN);
-  lcd.print("     Ready      ");
+  lcd.print(F("     Ready      "));
   lcd.setCursor(0, 1);
   lcd.print(menu_line);
 
