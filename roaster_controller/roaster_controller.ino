@@ -90,9 +90,15 @@ void updateOutput(int heat, int fan) {
 }
 
 void printTimeRemaining(unsigned long end_time) {
-  lcd.setCursor(12, 0);
+  lcd.setCursor(13, 0);
   lcd.print((end_time - millis()) / 1000);
-  lcd.print("   ");
+  lcd.print("  ");
+}
+
+void printTimeElapsed(unsigned long start_time) {
+  lcd.setCursor(9, 0);
+  lcd.print((millis() - start_time) / 1000);
+  lcd.print("  ");
 }
 
 void checkCommands(boolean *cool, boolean *full_stop) {
@@ -148,6 +154,7 @@ void doConfig() {
 
 void doRoast() {
   unsigned long end_time = 0UL;
+  unsigned long start_time = 0UL;
   boolean cool = false;
   boolean full_stop = false;
 
@@ -163,6 +170,8 @@ void doRoast() {
 
   checkCommands(&cool, &full_stop);
 
+  start_time = millis();
+
   // Turn on heat and wait for drying period.
   lcd.clear();
   lcd.setBacklight(YELLOW);
@@ -171,6 +180,7 @@ void doRoast() {
   updateOutput(1, fan_dry);
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
+    printTimeElapsed(start_time);
     printTimeRemaining(end_time);
     delay(DELAY_BUTTON);
     checkCommands(&cool, &full_stop);
@@ -185,6 +195,7 @@ void doRoast() {
     updateOutput(1, i);
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
+      printTimeElapsed(start_time);
       printTimeRemaining(end_time);
       delay(DELAY_BUTTON);
       checkCommands(&cool, &full_stop);
@@ -201,6 +212,7 @@ void doRoast() {
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
+    printTimeElapsed(start_time);
     printTimeRemaining(end_time);
     delay(DELAY_BUTTON);
     checkCommands(&cool, &full_stop);
@@ -210,7 +222,8 @@ void doRoast() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.setCursor(0, 0);
-  lcd.print("Done roasting");
+  lcd.print("Done");
+  printTimeElapsed(start_time);
   updateOutput(0, 0);
   while (!lcd.readButtons())
     delay(DELAY_BUTTON);
@@ -219,9 +232,10 @@ void doRoast() {
 void doManual() {
   int fan = 0;
   int heat = 0;
+  unsigned long start_time = millis();
   lcd.clear();
   lcd.setBacklight(BLUE);
-  lcd.print("Manual Mode");
+  lcd.print("Manual");
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_RIGHT) {
@@ -242,6 +256,7 @@ void doManual() {
       if (fan < FAN_MIN)
         fan = 0;
     }
+    printTimeElapsed(start_time);
     updateOutput(heat, fan);
     delay(DELAY_BUTTON);
   }
