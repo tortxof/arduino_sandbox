@@ -161,7 +161,6 @@ void doRoast() {
   // Spool up fan
   lcd.clear();
   lcd.setBacklight(YELLOW);
-  lcd.setCursor(0, 0);
   lcd.print("Spooling up");
   for (int i = 0; i <= fan_dry; i += fan_spool_step) {
     updateOutput(0, i);
@@ -170,14 +169,12 @@ void doRoast() {
 
   checkCommands(&cool, &full_stop);
 
-  start_time = millis();
-
   // Turn on heat and wait for drying period.
   lcd.clear();
   lcd.setBacklight(YELLOW);
-  lcd.setCursor(0, 0);
   lcd.print("Drying");
   updateOutput(1, fan_dry);
+  start_time = millis();
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
     printTimeElapsed(start_time);
@@ -189,14 +186,13 @@ void doRoast() {
   // Ramp down fan speed over time
   lcd.clear();
   lcd.setBacklight(RED);
-  lcd.setCursor(0, 0);
   lcd.print("Roasting");
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
-    updateOutput(1, i);
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
+    updateOutput(1, i);
     while ((millis() < end_time) && !cool && !full_stop) {
-      printTimeElapsed(start_time);
       printTimeRemaining(end_time);
+      printTimeElapsed(start_time);
       delay(DELAY_BUTTON);
       checkCommands(&cool, &full_stop);
     }
@@ -207,13 +203,12 @@ void doRoast() {
   // Cooling period
   lcd.clear();
   lcd.setBacklight(BLUE);
-  lcd.setCursor(0, 0);
   lcd.print("Cooling");
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
-    printTimeElapsed(start_time);
     printTimeRemaining(end_time);
+    printTimeElapsed(start_time);
     delay(DELAY_BUTTON);
     checkCommands(&cool, &full_stop);
   }
@@ -221,7 +216,6 @@ void doRoast() {
   // Stop
   lcd.clear();
   lcd.setBacklight(WHITE);
-  lcd.setCursor(0, 0);
   lcd.print("Done");
   printTimeElapsed(start_time);
   updateOutput(0, 0);
@@ -233,6 +227,7 @@ void doManual() {
   int fan = 0;
   int heat = 0;
   unsigned long start_time = millis();
+
   lcd.clear();
   lcd.setBacklight(BLUE);
   lcd.print("Manual");
@@ -293,7 +288,6 @@ void loop() {
   // Update display
   lcd.clear();
   lcd.setBacklight(GREEN);
-  lcd.setCursor(0, 0);
   lcd.print("     Ready      ");
   lcd.setCursor(0, 1);
   lcd.print(menu_line);
