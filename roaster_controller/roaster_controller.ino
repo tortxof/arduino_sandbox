@@ -19,9 +19,6 @@ const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 const int DELAY_BUTTON = 10; // Time to wait in button loops
 
-boolean cool;
-boolean full_stop;
-
 int fan_dry = 200;
 int fan_start = 120;
 int fan_end = 80;
@@ -64,7 +61,7 @@ void printTime(int seconds, int posx, int posy) {
   lcd.print(time_string);
 }
 
-void checkCommands() {
+void checkCommands(boolean& cool, boolean& full_stop) {
   uint8_t buttons = lcd.readButtons();
   if (buttons) {
     if (buttons & BUTTON_LEFT) {
@@ -124,8 +121,8 @@ void doConfig() {
 void doRoast() {
   unsigned long end_time;
   unsigned long start_time;
-  cool = false;
-  full_stop = false;
+  boolean cool = false;
+  boolean full_stop = false;
 
   // Spool up fan
   lcd.clear();
@@ -136,7 +133,7 @@ void doRoast() {
     delay(10);
   }
 
-  checkCommands();
+  checkCommands(cool, full_stop);
 
   // Turn on heat and wait for drying period.
   lcd.clear();
@@ -149,7 +146,7 @@ void doRoast() {
     printTime((end_time - millis()) / 1000UL, 11, 0);
     printTime((millis() - start_time) / 1000UL, 5, 0);
     delay(DELAY_BUTTON);
-    checkCommands();
+    checkCommands(cool, full_stop);
   }
 
   // Ramp down fan speed over time
@@ -163,7 +160,7 @@ void doRoast() {
       printTime((end_time - millis()) / 1000UL, 11, 0);
       printTime((millis() - start_time) / 1000UL, 5, 0);
       delay(DELAY_BUTTON);
-      checkCommands();
+      checkCommands(cool, full_stop);
     }
     if (cool || full_stop)
       break;
@@ -179,7 +176,7 @@ void doRoast() {
     printTime((end_time - millis()) / 1000UL, 11, 0);
     printTime((millis() - start_time) / 1000UL, 5, 0);
     delay(DELAY_BUTTON);
-    checkCommands();
+    checkCommands(cool, full_stop);
   }
 
   // Stop
