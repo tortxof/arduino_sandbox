@@ -144,7 +144,7 @@ void doRoast() {
   lcd.print(F("Dry"));
   updateOutput(1, fan_dry);
   start_time = millis();
-  end_time = millis() + ((unsigned long)dry_delay * 1000UL);
+  end_time = start_time + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
     printTime((end_time - millis()) / 1000UL, 11, 0);
     printTime((millis() - start_time) / 1000UL, 5, 0);
@@ -157,7 +157,7 @@ void doRoast() {
   lcd.setBacklight(RED);
   lcd.print(F("Rst"));
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
-    end_time = millis() + ((unsigned long)roast_delay * 1000UL);
+    end_time += ((unsigned long)roast_delay * 1000UL);
     updateOutput(1, i);
     while ((millis() < end_time) && !cool && !full_stop) {
       printTime((end_time - millis()) / 1000UL, 11, 0);
@@ -174,7 +174,7 @@ void doRoast() {
   lcd.setBacklight(BLUE);
   lcd.print(F("Cool"));
   updateOutput(0, fan_cool);
-  end_time = millis() + ((unsigned long)cool_delay * 1000UL);
+  end_time += ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
     printTime((end_time - millis()) / 1000UL, 11, 0);
     printTime((millis() - start_time) / 1000UL, 5, 0);
