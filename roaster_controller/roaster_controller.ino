@@ -101,7 +101,7 @@ void printTime(int seconds, int posx, int posy) {
     seconds -= 60;
   }
   char time_string[6];
-  sprintf(time_string, "%02d:%02d", minutes, seconds);
+  sprintf(time_string, "%2d:%02d", minutes, seconds);
   lcd.setCursor(posx, posy);
   lcd.print(time_string);
 }
@@ -183,7 +183,7 @@ void doRoast() {
   // Turn on heat and wait for drying period.
   lcd.clear();
   lcd.setBacklight(YELLOW);
-  lcd.print(F("Drying"));
+  lcd.print(F("Dry"));
   updateOutput(1, fan_dry);
   start_time = millis();
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
@@ -197,7 +197,7 @@ void doRoast() {
   // Ramp down fan speed over time
   lcd.clear();
   lcd.setBacklight(RED);
-  lcd.print(F("Roasting"));
+  lcd.print(F("Rst"));
   for (int i = fan_start; i >= fan_end; i -= fan_step) {
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     updateOutput(1, i);
@@ -214,7 +214,7 @@ void doRoast() {
   // Cooling period
   lcd.clear();
   lcd.setBacklight(BLUE);
-  lcd.print(F("Cooling"));
+  lcd.print(F("Cool"));
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
@@ -271,7 +271,8 @@ void doManual() {
   lcd.print(F("Done"));
   printTime((millis() - start_time) / 1000UL, 11, 0);
   updateOutput(0, 0);
-  delay(2000);
+  while (!lcd.readButtons())
+    delay(DELAY_BUTTON);
 }
 
 void setup() {
