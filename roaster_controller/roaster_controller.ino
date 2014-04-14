@@ -61,6 +61,9 @@ const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 const int DELAY_BUTTON = 10; // Time to wait in button loops
 
+boolean cool;
+boolean full_stop;
+
 int fan_dry = 200;
 int fan_start = 160;
 int fan_end = 100;
@@ -93,26 +96,26 @@ void updateOutput(int heat, int fan) {
 
 void printTimeRemaining(unsigned long end_time) {
   char time_string[5];
-  sprintf(time_string, "%4d", (end_time - millis()) / 1000);
+  sprintf(time_string, "%4d", (end_time - millis()) / 1000UL);
   lcd.setCursor(12, 0);
   lcd.print(time_string);
 }
 
 void printTimeElapsed(unsigned long start_time) {
   char time_string[5];
-  sprintf(time_string, "%4d", (millis() - start_time) / 1000);
+  sprintf(time_string, "%4d", (millis() - start_time) / 1000UL);
   lcd.setCursor(8, 0);
   lcd.print(time_string);
 }
 
-void checkCommands(boolean *cool, boolean *full_stop) {
+void checkCommands() {
   uint8_t buttons = lcd.readButtons();
   if (buttons) {
     if (buttons & BUTTON_LEFT) {
-      *full_stop = true;
+      full_stop = true;
     }
     if (buttons & BUTTON_RIGHT) {
-      *cool = true;
+      cool = true;
     }
   }
 }
@@ -165,8 +168,8 @@ void doConfig() {
 void doRoast() {
   unsigned long end_time;
   unsigned long start_time;
-  boolean cool = false;
-  boolean full_stop = false;
+  cool = false;
+  full_stop = false;
 
   // Spool up fan
   lcd.clear();
@@ -177,7 +180,7 @@ void doRoast() {
     delay(10);
   }
 
-  checkCommands(&cool, &full_stop);
+  checkCommands();
 
   // Turn on heat and wait for drying period.
   lcd.clear();
@@ -190,7 +193,7 @@ void doRoast() {
     printTimeElapsed(start_time);
     printTimeRemaining(end_time);
     delay(DELAY_BUTTON);
-    checkCommands(&cool, &full_stop);
+    checkCommands();
   }
 
   // Ramp down fan speed over time
@@ -204,7 +207,7 @@ void doRoast() {
       printTimeRemaining(end_time);
       printTimeElapsed(start_time);
       delay(DELAY_BUTTON);
-      checkCommands(&cool, &full_stop);
+      checkCommands();
     }
     if (cool || full_stop)
       break;
@@ -220,7 +223,7 @@ void doRoast() {
     printTimeRemaining(end_time);
     printTimeElapsed(start_time);
     delay(DELAY_BUTTON);
-    checkCommands(&cool, &full_stop);
+    checkCommands();
   }
 
   // Stop
