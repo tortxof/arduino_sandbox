@@ -4,7 +4,7 @@
 
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
-// These #defines make it easy to set the backlight color
+// lcd backlight color
 #define OFF 0x0
 #define RED 0x1
 #define YELLOW 0x3
@@ -13,48 +13,6 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define BLUE 0x4
 #define VIOLET 0x5
 #define WHITE 0x7
-
-// Arrows
-byte arrow_l[8] = {
-  B00000,
-  B00000,
-  B00010,
-  B00110,
-  B01110,
-  B00110,
-  B00010,
-  B00000,
-};
-byte arrow_r[8] = {
-  B00000,
-  B00000,
-  B01000,
-  B01100,
-  B01110,
-  B01100,
-  B01000,
-  B00000,
-};
-byte arrow_u[8] = {
-  B00000,
-  B00000,
-  B00100,
-  B01110,
-  B11111,
-  B00000,
-  B00000,
-  B00000,
-};
-byte arrow_d[8] = {
-  B00000,
-  B00000,
-  B00000,
-  B11111,
-  B01110,
-  B00100,
-  B00000,
-  B00000,
-};
 
 const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
@@ -65,14 +23,14 @@ boolean cool;
 boolean full_stop;
 
 int fan_dry = 200;
-int fan_start = 160;
-int fan_end = 100;
+int fan_start = 120;
+int fan_end = 80;
 int fan_cool = 120;
 int fan_spool_step = 10;
 int fan_step = 1;
 int dry_delay = 4 * 60; // 4 minutes in seconds
 int cool_delay = 2 * 60;
-int roast_delay = 10; // Delay between fan speed steps in second.
+int roast_delay = 15; // Delay between fan speed steps in second.
 int man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
@@ -293,17 +251,12 @@ void setup() {
 }
 
 void loop() {
-  // Define menu line
-  char menu_line[] = " Man S=Auto Cfg ";
-  menu_line[0] = byte(2);
-  menu_line[15] = byte(3);
-
   // Update display
   lcd.clear();
   lcd.setBacklight(GREEN);
   lcd.print(F("     Ready      "));
   lcd.setCursor(0, 1);
-  lcd.print(menu_line);
+  lcd.print(F("<Man S=Auto Cfg>"));
 
   // Wait for button push
   while (!lcd.readButtons())
