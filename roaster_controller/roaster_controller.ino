@@ -94,17 +94,15 @@ void updateOutput(int heat, int fan) {
   }
 }
 
-void printTimeRemaining(unsigned long end_time) {
-  char time_string[5];
-  sprintf(time_string, "%4d", (end_time - millis()) / 1000UL);
-  lcd.setCursor(12, 0);
-  lcd.print(time_string);
-}
-
-void printTimeElapsed(unsigned long start_time) {
-  char time_string[5];
-  sprintf(time_string, "%4d", (millis() - start_time) / 1000UL);
-  lcd.setCursor(8, 0);
+void printTime(int seconds, int posx, int posy) {
+  int minutes = 0;
+  while (seconds >= 60) {
+    minutes++;
+    seconds -= 60;
+  }
+  char time_string[6];
+  sprintf(time_string, "%02d:%02d", minutes, seconds);
+  lcd.setCursor(posx, posy);
   lcd.print(time_string);
 }
 
@@ -190,8 +188,8 @@ void doRoast() {
   start_time = millis();
   end_time = millis() + ((unsigned long)dry_delay * 1000UL);
   while ((millis() < end_time) && !cool && !full_stop) {
-    printTimeElapsed(start_time);
-    printTimeRemaining(end_time);
+    printTime((end_time - millis()) / 1000UL, 11, 0);
+    printTime((millis() - start_time) / 1000UL, 5, 0);
     delay(DELAY_BUTTON);
     checkCommands();
   }
@@ -204,8 +202,8 @@ void doRoast() {
     end_time = millis() + ((unsigned long)roast_delay * 1000UL);
     updateOutput(1, i);
     while ((millis() < end_time) && !cool && !full_stop) {
-      printTimeRemaining(end_time);
-      printTimeElapsed(start_time);
+      printTime((end_time - millis()) / 1000UL, 11, 0);
+      printTime((millis() - start_time) / 1000UL, 5, 0);
       delay(DELAY_BUTTON);
       checkCommands();
     }
@@ -220,8 +218,8 @@ void doRoast() {
   updateOutput(0, fan_cool);
   end_time = millis() + ((unsigned long)cool_delay * 1000UL);
   while ((millis() < end_time) && !full_stop) {
-    printTimeRemaining(end_time);
-    printTimeElapsed(start_time);
+    printTime((end_time - millis()) / 1000UL, 11, 0);
+    printTime((millis() - start_time) / 1000UL, 5, 0);
     delay(DELAY_BUTTON);
     checkCommands();
   }
@@ -230,7 +228,7 @@ void doRoast() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F("Done"));
-  printTimeElapsed(start_time);
+  printTime((millis() - start_time) / 1000UL, 11, 0);
   updateOutput(0, 0);
   while (!lcd.readButtons())
     delay(DELAY_BUTTON);
@@ -264,14 +262,14 @@ void doManual() {
       if (fan < FAN_MIN)
         fan = 0;
     }
-    printTimeElapsed(start_time);
+    printTime((millis() - start_time) / 1000UL, 11, 0);
     updateOutput(heat, fan);
     delay(DELAY_BUTTON);
   }
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F("Done"));
-  printTimeElapsed(start_time);
+  printTime((millis() - start_time) / 1000UL, 11, 0);
   updateOutput(0, 0);
   delay(2000);
 }
