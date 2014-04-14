@@ -236,14 +236,7 @@ void doManual() {
 void setup() {
   pinMode(HEAT_PIN, OUTPUT);
   pinMode(FAN_PIN, OUTPUT);
-
   lcd.begin(16, 2);
-
-  lcd.createChar(0, arrow_u);
-  lcd.createChar(1, arrow_d);
-  lcd.createChar(2, arrow_l);
-  lcd.createChar(3, arrow_r);
-
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F(" Coffee Roaster "));
