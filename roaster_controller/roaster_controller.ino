@@ -185,6 +185,7 @@ void doRoast() {
   lcd.print(F("Done"));
   printTime((millis() - start_time) / 1000UL, 11, 0);
   updateOutput(0, 0);
+  delay(DELAY_SPLASH);
   while (!lcd.readButtons())
     delay(DELAY_BUTTON);
 }
@@ -226,6 +227,7 @@ void doManual() {
   lcd.print(F("Done"));
   printTime((millis() - start_time) / 1000UL, 11, 0);
   updateOutput(0, 0);
+  delay(DELAY_SPLASH);
   while (!lcd.readButtons())
     delay(DELAY_BUTTON);
 }
