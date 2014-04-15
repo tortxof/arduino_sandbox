@@ -2,8 +2,6 @@
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
 
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
-
 // lcd backlight color
 #define OFF 0x0
 #define RED 0x1
@@ -13,6 +11,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define BLUE 0x4
 #define VIOLET 0x5
 #define WHITE 0x7
+
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
