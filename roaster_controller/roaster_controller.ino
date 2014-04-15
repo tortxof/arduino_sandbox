@@ -33,6 +33,7 @@ int roast_delay = 15; // Delay between fan speed steps in second.
 int man_fan_step = 5;
 
 void updateOutput(int heat, int fan) {
+  fan = constrain(fan, 0, FAN_MAX);
   lcd.setCursor(0, 1);
   lcd.print(F("Fan:"));
   lcd.setCursor(4, 1);
@@ -212,6 +213,8 @@ void doManual() {
       fan += man_fan_step;
       if (fan < FAN_MIN)
         fan = FAN_MIN;
+      if (fan > FAN_MAX)
+        fan = FAN_MAX;
     }
     if (buttons & BUTTON_DOWN) {
       fan -= man_fan_step;
