@@ -123,6 +123,10 @@ void doRoast() {
   boolean cool = false;
   boolean full_stop = false;
 
+  // x position for printing times.
+  int elapsed_pos = 11;
+  int remain_pos = 5;
+
   // Spool up fan
   lcd.clear();
   lcd.setBacklight(YELLOW);
@@ -144,8 +148,8 @@ void doRoast() {
     start_time = millis();
     end_time = start_time + ((unsigned long)dry_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
-      printTime((end_time - millis()) / 1000UL, 11, 0);
-      printTime((millis() - start_time) / 1000UL, 5, 0);
+      printTime((end_time - millis()) / 1000UL, remain_pos, 0);
+      printTime((millis() - start_time) / 1000UL, elapsed_pos, 0);
       delay(DELAY_BUTTON);
       checkCommands(cool, full_stop);
     }
@@ -163,8 +167,8 @@ void doRoast() {
       end_time += ((unsigned long)roast_delay * 1000UL);
       updateOutput(1, i);
       while ((millis() < end_time) && !cool && !full_stop) {
-        printTime((end_time - millis()) / 1000UL, 11, 0);
-        printTime((millis() - start_time) / 1000UL, 5, 0);
+        printTime((end_time - millis()) / 1000UL, remain_pos, 0);
+        printTime((millis() - start_time) / 1000UL, elapsed_pos, 0);
         delay(DELAY_BUTTON);
         checkCommands(cool, full_stop);
       }
@@ -184,8 +188,8 @@ void doRoast() {
     updateOutput(0, fan_cool);
     end_time += ((unsigned long)cool_delay * 1000UL);
     while ((millis() < end_time) && !full_stop) {
-      printTime((end_time - millis()) / 1000UL, 11, 0);
-      printTime((millis() - start_time) / 1000UL, 5, 0);
+      printTime((end_time - millis()) / 1000UL, remain_pos, 0);
+      printTime((millis() - start_time) / 1000UL, elapsed_pos, 0);
       delay(DELAY_BUTTON);
       checkCommands(cool, full_stop);
     }
@@ -195,7 +199,7 @@ void doRoast() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F("Done"));
-  printTime((millis() - start_time) / 1000UL, 11, 0);
+  printTime((millis() - start_time) / 1000UL, elapsed_pos, 0);
   updateOutput(0, 0);
   delay(DELAY_SPLASH);
   while (!lcd.readButtons())
