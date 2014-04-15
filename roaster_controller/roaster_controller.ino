@@ -17,7 +17,9 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
+const int FAN_MAX = 210;
 const int DELAY_BUTTON = 10; // Time to wait in button loops
+const int DELAY_SPLASH = 2000; // Time to wait at splash and finish screens.
 
 int fan_dry = 200;
 int fan_start = 120;
