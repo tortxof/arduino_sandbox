@@ -66,13 +66,11 @@ void printTime(int seconds, int posx, int posy) {
 
 void checkCommands(boolean& cool, boolean& full_stop) {
   uint8_t buttons = lcd.readButtons();
-  if (buttons) {
-    if (buttons & BUTTON_LEFT) {
-      full_stop = true;
-    }
-    if (buttons & BUTTON_RIGHT) {
-      cool = true;
-    }
+  if (buttons & BUTTON_LEFT) {
+    full_stop = true;
+  }
+  if (buttons & BUTTON_RIGHT) {
+    cool = true;
   }
 }
 
