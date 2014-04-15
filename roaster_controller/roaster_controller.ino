@@ -27,8 +27,8 @@ int fan_end = 80;
 int fan_cool = 120;
 int fan_spool_step = 10;
 int fan_step = 1;
-int dry_delay = 4 * 60; // 4 minutes in seconds
-int cool_delay = 2 * 60;
+int dry_delay = 240; // 4 minutes in seconds
+int cool_delay = 120;
 int roast_delay = 15; // Delay between fan speed steps in second.
 int man_fan_step = 5;
 
@@ -102,7 +102,6 @@ int setParam(int value, int step_size, const __FlashStringHelper* desc) {
 void doConfig() {
   lcd.clear();
   lcd.setBacklight(VIOLET);
-  lcd.setCursor(0, 0);
   lcd.print(F("Configure"));
 
   fan_start = setParam(fan_start, 5, F("Fan Start"));
@@ -115,9 +114,8 @@ void doConfig() {
   man_fan_step = setParam(man_fan_step, 1, F("Man Fan Step"));
 
   lcd.clear();
-  lcd.setCursor(0, 0);
   lcd.print(F("Config done"));
-  delay(1000);
+  delay(DELAY_SPLASH);
 }
 
 void doRoast() {
@@ -239,7 +237,7 @@ void setup() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F(" Coffee Roaster "));
-  delay(2000);
+  delay(DELAY_SPLASH);
 }
 
 void loop() {
