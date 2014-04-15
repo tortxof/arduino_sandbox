@@ -137,47 +137,59 @@ void doRoast() {
   checkCommands(cool, full_stop);
 
   // Turn on heat and wait for drying period.
-  lcd.clear();
-  lcd.setBacklight(YELLOW);
-  lcd.print(F("Dry"));
-  updateOutput(1, fan_dry);
-  start_time = millis();
-  end_time = start_time + ((unsigned long)dry_delay * 1000UL);
-  while ((millis() < end_time) && !cool && !full_stop) {
-    printTime((end_time - millis()) / 1000UL, 11, 0);
-    printTime((millis() - start_time) / 1000UL, 5, 0);
-    delay(DELAY_BUTTON);
-    checkCommands(cool, full_stop);
-  }
-
-  // Ramp down fan speed over time
-  lcd.clear();
-  lcd.setBacklight(RED);
-  lcd.print(F("Rst"));
-  for (int i = fan_start; i >= fan_end; i -= fan_step) {
-    end_time += ((unsigned long)roast_delay * 1000UL);
-    updateOutput(1, i);
+  if (!(cool || full_stop)) {
+    lcd.clear();
+    lcd.setBacklight(YELLOW);
+    lcd.print(F("Dry"));
+    updateOutput(1, fan_dry);
+    start_time = millis();
+    end_time = start_time + ((unsigned long)dry_delay * 1000UL);
     while ((millis() < end_time) && !cool && !full_stop) {
       printTime((end_time - millis()) / 1000UL, 11, 0);
       printTime((millis() - start_time) / 1000UL, 5, 0);
       delay(DELAY_BUTTON);
       checkCommands(cool, full_stop);
     }
-    if (cool || full_stop)
-      break;
   }
 
-  // Cooling period
-  lcd.clear();
-  lcd.setBacklight(BLUE);
-  lcd.print(F("Cool"));
-  updateOutput(0, fan_cool);
-  end_time += ((unsigned long)cool_delay * 1000UL);
-  while ((millis() < end_time) && !full_stop) {
-    printTime((end_time - millis()) / 1000UL, 11, 0);
-    printTime((millis() - start_time) / 1000UL, 5, 0);
-    delay(DELAY_BUTTON);
-    checkCommands(cool, full_stop);
+  if (cool || full_stop)
+    end_time = millis();
+
+  // Ramp down fan speed over time
+  if (!(cool || full_stop)) {
+    lcd.clear();
+    lcd.setBacklight(RED);
+    lcd.print(F("Rst"));
+    for (int i = fan_start; i >= fan_end; i -= fan_step) {
+      end_time += ((unsigned long)roast_delay * 1000UL);
+      updateOutput(1, i);
+      while ((millis() < end_time) && !cool && !full_stop) {
+        printTime((end_time - millis()) / 1000UL, 11, 0);
+        printTime((millis() - start_time) / 1000UL, 5, 0);
+        delay(DELAY_BUTTON);
+        checkCommands(cool, full_stop);
+      }
+      if (cool || full_stop)
+        break;
+    }
+  }
+
+  if (cool || full_stop)
+    end_time = millis();
+
+  // Cooling period.
+  if (!full_stop) {
+    lcd.clear();
+    lcd.setBacklight(BLUE);
+    lcd.print(F("Cool"));
+    updateOutput(0, fan_cool);
+    end_time += ((unsigned long)cool_delay * 1000UL);
+    while ((millis() < end_time) && !full_stop) {
+      printTime((end_time - millis()) / 1000UL, 11, 0);
+      printTime((millis() - start_time) / 1000UL, 5, 0);
+      delay(DELAY_BUTTON);
+      checkCommands(cool, full_stop);
+    }
   }
 
   // Stop
