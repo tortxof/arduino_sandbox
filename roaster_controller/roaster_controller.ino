@@ -270,12 +270,20 @@ void loop() {
   while (!lcd.readButtons())
     delay(DELAY_BUTTON);
 
-  uint8_t buttons = lcd.readButtons();
-  if (buttons & BUTTON_SELECT)
-    doRoast();
-  else if (buttons & BUTTON_RIGHT)
-    doConfig();
-  else if (buttons & BUTTON_LEFT)
-    doManual();
+  while (true) {
+    uint8_t buttons = lcd.readButtons();
+    if (buttons & BUTTON_SELECT) {
+      doRoast();
+      break;
+    }
+    else if (buttons & BUTTON_RIGHT) {
+      doConfig();
+      break;
+    }
+    else if (buttons & BUTTON_LEFT) {
+      doManual();
+      break;
+    }
+  }
 }
 
