@@ -18,7 +18,7 @@ const int FAN_PIN = 11;
 const int HEAT_PIN = 10;
 const int FAN_MIN = 50;
 const int FAN_MAX = 210;
-const int DELAY_BUTTON = 10; // Time to wait in button loops
+const int DELAY_BUTTON = 1; // Time to wait in button loops
 const int DELAY_SPLASH = 2000; // Time to wait at splash and finish screens.
 
 int fan_dry = 200;
@@ -212,6 +212,7 @@ void doManual() {
   lcd.clear();
   lcd.setBacklight(BLUE);
   lcd.print(F("Manual"));
+
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
     uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_RIGHT) {
@@ -238,6 +239,7 @@ void doManual() {
     updateOutput(heat, fan);
     delay(DELAY_BUTTON);
   }
+
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F("Done"));
