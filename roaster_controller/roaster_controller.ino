@@ -120,8 +120,8 @@ void doConfig() {
 }
 
 void doRoast() {
-  unsigned long end_time;
   unsigned long start_time;
+  unsigned long end_time;
   boolean cool = false;
   boolean full_stop = false;
 
@@ -137,6 +137,7 @@ void doRoast() {
   checkCommands(cool, full_stop);
 
   // Turn on heat and wait for drying period.
+  start_time = millis(); // We need to define start_time here in case cool or full_stop is already true;
   if (!(cool || full_stop)) {
     lcd.clear();
     lcd.setBacklight(YELLOW);
