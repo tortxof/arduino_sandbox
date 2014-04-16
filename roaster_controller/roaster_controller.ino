@@ -98,6 +98,25 @@ int setParam(int value, int step_size, const __FlashStringHelper* desc) {
   return value;
 }
 
+void doInfo() {
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.print(F("Compiled"));
+  lcd.setCursor(0, 1);
+  lcd.print(F(__DATE__));
+  delay(DELAY_SPLASH);
+  lcd.setCursor(0, 1);
+  lcd.print(F("                "));
+  lcd.setCursor(0, 1);
+  lcd.print(F(__TIME__));
+  delay(DELAY_SPLASH);
+  lcd.clear();
+  lcd.print(F("djones.co"));
+  lcd.setCursor(0, 1);
+  lcd.print(F("/roaster"));
+  delay(DELAY_SPLASH);
+}
+
 void doConfig() {
   lcd.clear();
   lcd.setBacklight(VIOLET);
@@ -286,6 +305,10 @@ void loop() {
     }
     else if (buttons & BUTTON_LEFT) {
       doManual();
+      break;
+    }
+    else if (buttons & BUTTON_UP) {
+      doInfo();
       break;
     }
   }
