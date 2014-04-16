@@ -183,7 +183,7 @@ void doRoast() {
   // Cooling period.
   if (!full_stop) {
     lcd.clear();
-    lcd.setBacklight(BLUE);
+    lcd.setBacklight(TEAL);
     lcd.print(F("Cool"));
     updateOutput(0, fan_cool);
     end_time += ((unsigned long)cool_delay * 1000UL);
@@ -212,7 +212,7 @@ void doManual() {
   unsigned long start_time = millis();
 
   lcd.clear();
-  lcd.setBacklight(BLUE);
+  lcd.setBacklight(TEAL);
   lcd.print(F("Manual"));
 
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
@@ -222,7 +222,7 @@ void doManual() {
       heat = 1;
     }
     if (buttons & BUTTON_LEFT) {
-      lcd.setBacklight(BLUE);
+      lcd.setBacklight(TEAL);
       heat = 0;
     }
     if (buttons & BUTTON_UP) {
