@@ -1,0 +1,52 @@
+#include <Wire.h>
+#include <Adafruit_MCP23017.h>
+#include <Adafruit_RGBLCDShield.h>
+
+// lcd backlight color
+#define OFF 0x0
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7
+
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
+
+const int NUM_MENU_ITEMS = 4;
+
+void printMenuText(int selection) {
+  lcd.setCursor(0, 1);
+  if (selection == 0)
+    lcd.print(F("Manual"));
+  if (selection == 1)
+    lcd.print(F("Set Time"));
+  if (selection == 2)
+    lcd.print(F("Set Schedule"));
+  if (selection == 3)
+    lcd.print(F("Auto"));
+}
+
+void setup() {
+
+}
+
+void loop() {
+  lcd.clear();
+  lcd.setBacklight(WHITE);
+  lcd.print(F("Menu"));
+
+  int menu_selection = 0;
+  while (!(lcd.readButtons() & BUTTON_SELECT)) {
+    if (lcd.readButtons() & BUTTON_UP)
+      menu_selection--;
+    if (lcd.readButtons() & BUTTON_DOWN)
+      menu_selection++;
+    if (menu_selection < 0)
+      menu_selection = 0;
+    if (menu_selection >= NUM_MENU_ITEMS)
+      menu_selection = NUM_MENU_ITEMS - 1;
+    printMenuText(menu_selection);
+  }
+}
