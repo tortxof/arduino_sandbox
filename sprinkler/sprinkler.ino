@@ -26,7 +26,7 @@ const unsigned long MINUTE_IN_MS = 60000UL;
 const unsigned long SECOND_IN_MS = 1000UL;
 const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
-unsigned long midnight = 0; // midnight, in the future, for comparison to millis()
+unsigned long midnight = 0; // midnight, in the past, for comparison to millis()
 unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
 unsigned int cycle_length[NUM_CYCLES]; // length of each cycle in minutes
 boolean cycle_enabled[NUM_CYCLES];
@@ -45,11 +45,9 @@ void printMenuText(int selection) {
 
 void printTime() {
   unsigned long now =  millis();
-  while (midnight > (now + DAY_IN_MS))
-    midnight -= DAY_IN_MS;
-  while (now >= midnight)
+  while (now - midnight >= DAY_IN_MS)
     midnight += DAY_IN_MS;
-  unsigned long seconds = (DAY_IN_MS - (midnight - now)) / 1000UL;
+  unsigned long seconds = (now - midnight) / 1000UL;
   unsigned int minutes = 0;
   unsigned int hours = 0;
   while (seconds >= 60) {
