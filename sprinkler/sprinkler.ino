@@ -65,6 +65,18 @@ void printTime() {
   lcd.print(time_str);
 }
 
+void printStartTime(int minutes) {
+  int hours = 0;
+  while (minutes >= 60) {
+    minutes -= 60;
+    hours++;
+  }
+  char time_str[6];
+  sprintf(time_str, "%02d:%02d", hours, minutes);
+  lcd.setCursor(11, 1);
+  lcd.print(time_str);
+}
+
 void doMenuSelection(int selection) {
   if (selection == 0)
     doManual();
@@ -141,9 +153,53 @@ void doSetTime() {
 }
 
 void doSetSchedule() {
+  uint8_t buttons = 0;
+  unsigned int hours = 0;
+  unsigned int minutes = 0;
+  char time_str[6];
   lcd.clear();
-  lcd.print(F("Schedule"));
-  delay(DELAY_SPLASH);
+  lcd.print(F("Sched"));
+
+  for (int i = 0; i < NUM_CYCLES; i++) {
+    lcd.setCursor(6, 0);
+    lcd.print(i + 1);
+    lcd.setCursor(0, 1);
+    lcd.print(F("Hour  "));
+    delay(DELAY_SCROLL);
+    while (true) {
+      buttons = lcd.readButtons();
+      if (buttons & BUTTON_RIGHT)
+        break;
+      else if (buttons & BUTTON_UP) {
+        start_time[i] += 60;
+        delay(DELAY_SCROLL);
+      }
+      else if (buttons & BUTTON_DOWN) {
+        start_time[i] -= 60;
+        delay(DELAY_SCROLL);
+      }
+      start_time[i] = constrain(start_time[i], 0, 1440);
+      printStartTime(start_time[i]);
+    }
+    lcd.setCursor(0, 1);
+    lcd.print(F("Minute"));
+    delay(DELAY_SCROLL);
+    while (true) {
+      buttons = lcd.readButtons();
+      if (buttons & BUTTON_RIGHT)
+        break;
+      else if (buttons & BUTTON_UP) {
+        start_time[i]++;
+        delay(DELAY_SCROLL);
+      }
+      else if (buttons & BUTTON_DOWN) {
+        start_time[i]--;
+        delay(DELAY_SCROLL);
+      }
+      start_time[i] = constrain(start_time[i], 0, 1440);
+      printStartTime(start_time[i]);
+    }
+  }
 }
 
 void doAuto() {
