@@ -169,7 +169,7 @@ void doSetSchedule() {
     lcd.print(F(" Start"));
 
     lcd.setCursor(0, 1);
-    lcd.print(F("Hour  "));
+    lcd.print(F("Hour       "));
     delay(DELAY_SCROLL);
     while (true) {
       buttons = lcd.readButtons();
@@ -188,7 +188,7 @@ void doSetSchedule() {
     }
 
     lcd.setCursor(0, 1);
-    lcd.print(F("Minute"));
+    lcd.print(F("Minute     "));
     delay(DELAY_SCROLL);
     while (true) {
       buttons = lcd.readButtons();
@@ -206,11 +206,11 @@ void doSetSchedule() {
       printStartTime(start_time[i]);
     }
 
-    lcd.setCursor(11, 0);
-    lcd.print(F("     "));
+    lcd.setCursor(8, 0);
+    lcd.print(F("        "));
 
     lcd.setCursor(0, 1);
-    lcd.print(F("Duration"));
+    lcd.print(F("Duration   "));
     delay(DELAY_SCROLL);
     while (true) {
       buttons = lcd.readButtons();
@@ -229,7 +229,7 @@ void doSetSchedule() {
     }
 
     lcd.setCursor(0, 1);
-    lcd.print(F("Enable"));
+    lcd.print(F("Enable     "));
     delay(DELAY_SCROLL);
     while (true) {
       buttons = lcd.readButtons();
