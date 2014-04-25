@@ -16,6 +16,9 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 const int NUM_MENU_ITEMS = 4;
 const int DELAY_SCROLL = 200;
+const int DELAY_SPLASH = 2000;
+
+unsigned long midnight = 0;
 
 void printMenuText(int selection) {
   lcd.setCursor(0, 1);
@@ -41,19 +44,27 @@ void doMenuSelection(int selection) {
 }
 
 void doManual() {
-
+  lcd.clear();
+  lcd.print(F("Manual"));
+  delay(DELAY_SPLASH);
 }
 
 void doSetTime() {
-
+  lcd.clear();
+  lcd.print(F("Set Time"));
+  delay(DELAY_SPLASH);
 }
 
 void doSetSchedule() {
-
+  lcd.clear();
+  lcd.print(F("Schedule"));
+  delay(DELAY_SPLASH);
 }
 
 void doAuto() {
-
+  lcd.clear();
+  lcd.print(F("Auto"));
+  delay(DELAY_SPLASH);
 }
 
 void setup() {
