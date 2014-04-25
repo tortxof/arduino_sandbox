@@ -16,6 +16,7 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 const int VALVE_PIN = 12;
 const int NUM_MENU_ITEMS = 4;
+const int NUM_CYCLES = 4;
 const int DELAY_SCROLL = 200;
 const int DELAY_SPLASH = 2000;
 const unsigned long DAY_IN_MS = 86400000UL;
@@ -25,12 +26,9 @@ const unsigned long SECOND_IN_MS = 1000UL;
 const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
 unsigned long midnight = 0; // midnight, in the future, for comparison to millis()
-unsigned int start_time[] = {
-  0, 0, 0, 0};  // start times in minutes after midnight
-unsigned int cycle_length[] = {
-  30, 30, 30, 30}; // length of each cycle in minutes
-boolean cycle_enabled[] = {
-  false, false, false, false};
+unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
+unsigned int cycle_length[NUM_CYCLES]; // length of each cycle in minutes
+boolean cycle_enabled[NUM_CYCLES];
 
 void printMenuText(int selection) {
   lcd.setCursor(0, 1);
@@ -155,6 +153,13 @@ void doAuto() {
 }
 
 void setup() {
+  // initialise auto vars
+  for (int i = 0; i < NUM_CYCLES; i++) {
+    start_time[i] = 0;
+    cycle_length[i] = 30;
+    cycle_enabled[i] = false;
+  }
+
   lcd.begin(16, 2);
 }
 
