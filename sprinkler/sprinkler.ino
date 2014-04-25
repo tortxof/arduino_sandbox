@@ -232,7 +232,24 @@ void doSetSchedule() {
 void doAuto() {
   lcd.clear();
   lcd.print(F("Auto"));
-  delay(DELAY_SPLASH);
+  while (!lcd.readButtons()) {
+    printTime();
+    unsigned long now = getTime();
+    lcd.setCursor(0, 1);
+    for (int i = 0; i < NUM_CYCLES; i++) {
+      if (cycle_enabled[i] && (now > ((unsigned long)start_time[i] * 60UL)) && (now < (unsigned long)(start_time[i] + cycle_length[i]) * 60UL)) {
+        digitalWrite(VALVE_PIN, HIGH);
+        lcd.print(i);
+        lcd.print(F(":+ "));
+      }
+      else {
+        digitalWrite(VALVE_PIN, LOW);
+        lcd.print(i);
+        lcd.print(F(":- "));
+      }
+    }
+  }
+  digitalWrite(VALVE_PIN, LOW);
 }
 
 void setup() {
@@ -240,7 +257,7 @@ void setup() {
   for (int i = 0; i < NUM_CYCLES; i++) {
     start_time[i] = 0;
     cycle_length[i] = 30;
-    cycle_enabled[i] = false;
+    cycle_enabled[i] = true;
   }
 
   lcd.begin(16, 2);
