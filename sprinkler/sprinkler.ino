@@ -29,6 +29,33 @@ void printMenuText(int selection) {
     lcd.print(F("Auto            "));
 }
 
+void doMenuSelection(int selection) {
+  if (selection == 0)
+    doManual();
+  if (selection == 1)
+    doSetTime();
+  if (selection == 2)
+    doSetSchedule();
+  if (selection == 3)
+    doAuto();
+}
+
+void doManual() {
+
+}
+
+void doSetTime() {
+
+}
+
+void doSetSchedule() {
+
+}
+
+void doAuto() {
+
+}
+
 void setup() {
   lcd.begin(16, 2);
 }
@@ -55,4 +82,6 @@ void loop() {
       menu_selection = NUM_MENU_ITEMS - 1;
     printMenuText(menu_selection);
   }
+
+  doMenuSelection(menu_selection);
 }
