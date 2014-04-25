@@ -17,6 +17,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 const int NUM_MENU_ITEMS = 4;
 const int DELAY_SCROLL = 200;
 const int DELAY_SPLASH = 2000;
+const unsigned long DAY_IN_MS = 86400000UL;
+const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
 unsigned long midnight = 0;
 
@@ -30,6 +32,27 @@ void printMenuText(int selection) {
     lcd.print(F("Set Schedule    "));
   if (selection == 3)
     lcd.print(F("Auto            "));
+}
+
+void printTime() {
+  unsigned long now =  millis();
+  while (now > (midnight + DAY_IN_MS))
+    midnight += DAY_IN_MS;
+  unsigned long seconds = (now - midnight) / 1000UL;
+  unsigned int minutes = 0;
+  unsigned int hours = 0;
+  while (seconds > 60) {
+    seconds -= 60;
+    minutes++;
+  }
+  while (minutes > 60) {
+    minutes -= 60;
+    hours++;
+  }
+  lcd.setCursor(8, 0);
+  char time_str[9];
+  sprintf(time_str, TIME_FORMAT, hours, minutes, seconds);
+  lcd.print(time_str);
 }
 
 void doMenuSelection(int selection) {
@@ -92,6 +115,7 @@ void loop() {
     if (menu_selection >= NUM_MENU_ITEMS)
       menu_selection = NUM_MENU_ITEMS - 1;
     printMenuText(menu_selection);
+    printTime();
   }
 
   doMenuSelection(menu_selection);
