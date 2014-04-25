@@ -285,6 +285,7 @@ void loop() {
   lcd.clear();
   lcd.setBacklight(WHITE);
   lcd.print(F("Menu"));
+  delay(DELAY_SCROLL);
 
   int menu_selection = 0;
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
