@@ -14,6 +14,7 @@
 
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
+const int VALVE_PIN = 12;
 const int NUM_MENU_ITEMS = 4;
 const int DELAY_SCROLL = 200;
 const int DELAY_SPLASH = 2000;
@@ -24,6 +25,12 @@ const unsigned long SECOND_IN_MS = 1000UL;
 const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
 unsigned long midnight = 0; // midnight, in the future, for comparison to millis()
+unsigned int start_time[] = {
+  0, 0, 0, 0};  // start times in minutes after midnight
+unsigned int cycle_length[] = {
+  30, 30, 30, 30}; // length of each cycle in minutes
+boolean cycle_enabled[] = {
+  false, false, false, false};
 
 void printMenuText(int selection) {
   lcd.setCursor(0, 1);
