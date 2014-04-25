@@ -23,7 +23,7 @@ const unsigned long MINUTE_IN_MS = 60000UL;
 const unsigned long SECOND_IN_MS = 1000UL;
 const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
-unsigned long midnight = 0;
+unsigned long midnight = 0; // midnight, in the future, for comparison to millis()
 
 void printMenuText(int selection) {
   lcd.setCursor(0, 1);
@@ -39,9 +39,11 @@ void printMenuText(int selection) {
 
 void printTime() {
   unsigned long now =  millis();
-  while (now >= (midnight + DAY_IN_MS))
+  while (midnight > (now + DAY_IN_MS))
+    midnight -= DAY_IN_MS;
+  while (now >= midnight)
     midnight += DAY_IN_MS;
-  unsigned long seconds = (now - midnight) / 1000UL;
+  unsigned long seconds = (DAY_IN_MS - (midnight - now)) / 1000UL;
   unsigned int minutes = 0;
   unsigned int hours = 0;
   while (seconds >= 60) {
