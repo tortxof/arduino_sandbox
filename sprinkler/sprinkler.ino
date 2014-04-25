@@ -18,6 +18,9 @@ const int NUM_MENU_ITEMS = 4;
 const int DELAY_SCROLL = 200;
 const int DELAY_SPLASH = 2000;
 const unsigned long DAY_IN_MS = 86400000UL;
+const unsigned long HOUR_IN_MS = 3600000UL;
+const unsigned long MINUTE_IN_MS = 60000UL;
+const unsigned long SECOND_IN_MS = 1000UL;
 const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
 unsigned long midnight = 0;
@@ -75,6 +78,48 @@ void doManual() {
 void doSetTime() {
   lcd.clear();
   lcd.print(F("Set Time"));
+
+  uint8_t buttons = 0;
+
+  lcd.setCursor(0, 1);
+  lcd.print(F("Hours           "));
+  while (true) {
+    printTime();
+    buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP)
+      midnight += HOUR_IN_MS;
+    else if (buttons & BUTTON_DOWN)
+      midnight -= HOUR_IN_MS;
+    else if (buttons & BUTTON_RIGHT)
+      break;    
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.print(F("Minutes         "));
+  while (true) {
+    printTime();
+    buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP)
+      midnight += MINUTE_IN_MS;
+    else if (buttons & BUTTON_DOWN)
+      midnight -= MINUTE_IN_MS;
+    else if (buttons & BUTTON_RIGHT)
+      break;    
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.print(F("Seconds         "));
+  while (true) {
+    printTime();
+    buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP)
+      midnight += SECOND_IN_MS;
+    else if (buttons & BUTTON_DOWN)
+      midnight -= SECOND_IN_MS;
+    else if (buttons & BUTTON_RIGHT)
+      break;    
+  }
+
   delay(DELAY_SPLASH);
 }
 
