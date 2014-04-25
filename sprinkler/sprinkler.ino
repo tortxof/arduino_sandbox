@@ -15,21 +15,22 @@
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 const int NUM_MENU_ITEMS = 4;
+const int DELAY_SCROLL = 200;
 
 void printMenuText(int selection) {
   lcd.setCursor(0, 1);
   if (selection == 0)
-    lcd.print(F("Manual"));
+    lcd.print(F("Manual          "));
   if (selection == 1)
-    lcd.print(F("Set Time"));
+    lcd.print(F("Set Time        "));
   if (selection == 2)
-    lcd.print(F("Set Schedule"));
+    lcd.print(F("Set Schedule    "));
   if (selection == 3)
-    lcd.print(F("Auto"));
+    lcd.print(F("Auto            "));
 }
 
 void setup() {
-
+  lcd.begin(16, 2);
 }
 
 void loop() {
@@ -39,10 +40,15 @@ void loop() {
 
   int menu_selection = 0;
   while (!(lcd.readButtons() & BUTTON_SELECT)) {
-    if (lcd.readButtons() & BUTTON_UP)
+    uint8_t buttons = lcd.readButtons();
+    if (buttons & BUTTON_UP) {
       menu_selection--;
-    if (lcd.readButtons() & BUTTON_DOWN)
+      delay(DELAY_SCROLL);
+    }
+    if (buttons & BUTTON_DOWN) {
       menu_selection++;
+      delay(DELAY_SCROLL);
+    }
     if (menu_selection < 0)
       menu_selection = 0;
     if (menu_selection >= NUM_MENU_ITEMS)
