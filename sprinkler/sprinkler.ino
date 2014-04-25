@@ -237,6 +237,7 @@ void doSetSchedule() {
         break;
       else if ((buttons & BUTTON_UP) || (buttons & BUTTON_DOWN)) {
         cycle_enabled[i] = !cycle_enabled[i];
+        delay(DELAY_SCROLL);
       }
       lcd.setCursor(11, 1);
       if (cycle_enabled[i])
