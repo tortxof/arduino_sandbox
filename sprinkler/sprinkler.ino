@@ -83,6 +83,7 @@ void printStartTime(int minutes) {
 }
 
 void doMenuSelection(int selection) {
+  delay(DELAY_SCROLL);
   if (selection == 0)
     doManual();
   if (selection == 1)
