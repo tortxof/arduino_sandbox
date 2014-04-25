@@ -17,6 +17,7 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 const int VALVE_PIN = 12;
 const int NUM_MENU_ITEMS = 4;
 const int NUM_CYCLES = 4;
+const int MAX_CYCLE_LENGTH = 240; // minutes
 const int DELAY_SCROLL = 200;
 const int DELAY_SPLASH = 2000;
 const unsigned long DAY_IN_MS = 86400000UL;
@@ -154,15 +155,14 @@ void doSetTime() {
 
 void doSetSchedule() {
   uint8_t buttons = 0;
-  unsigned int hours = 0;
-  unsigned int minutes = 0;
-  char time_str[6];
   lcd.clear();
   lcd.print(F("Sched"));
 
   for (int i = 0; i < NUM_CYCLES; i++) {
     lcd.setCursor(6, 0);
     lcd.print(i + 1);
+    lcd.print(F(" Start"));
+
     lcd.setCursor(0, 1);
     lcd.print(F("Hour  "));
     delay(DELAY_SCROLL);
@@ -181,6 +181,7 @@ void doSetSchedule() {
       start_time[i] = constrain(start_time[i], 0, 1440);
       printStartTime(start_time[i]);
     }
+
     lcd.setCursor(0, 1);
     lcd.print(F("Minute"));
     delay(DELAY_SCROLL);
@@ -198,6 +199,28 @@ void doSetSchedule() {
       }
       start_time[i] = constrain(start_time[i], 0, 1440);
       printStartTime(start_time[i]);
+    }
+
+    lcd.setCursor(11, 0);
+    lcd.print(F("     "));
+
+    lcd.setCursor(0, 1);
+    lcd.print(F("Duration"));
+    delay(DELAY_SCROLL);
+    while (true) {
+      buttons = lcd.readButtons();
+      if (buttons & BUTTON_RIGHT)
+        break;
+      else if (buttons & BUTTON_UP) {
+        cycle_length[i]++;
+        delay(DELAY_SCROLL);
+      }
+      else if (buttons & BUTTON_DOWN) {
+        cycle_length[i]--;
+        delay(DELAY_SCROLL);
+      }
+      cycle_length[i] = constrain(cycle_length[i], 0, MAX_CYCLE_LENGTH);
+      printStartTime(cycle_length[i]);
     }
   }
 }
