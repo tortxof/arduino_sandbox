@@ -43,11 +43,17 @@ void printMenuText(int selection) {
     lcd.print(F("Auto            "));
 }
 
-void printTime() {
+// Returns time of day in seconds.
+unsigned long getTime() {
   unsigned long now =  millis();
   while (now - midnight >= DAY_IN_MS)
     midnight += DAY_IN_MS;
-  unsigned long seconds = (now - midnight) / 1000UL;
+  return (now - midnight) / 1000UL;
+}
+
+// Prints time of day to lcd.
+void printTime() {
+  unsigned long seconds = getTime();
   unsigned int minutes = 0;
   unsigned int hours = 0;
   while (seconds >= 60) {
