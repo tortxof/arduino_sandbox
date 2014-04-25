@@ -227,6 +227,23 @@ void doSetSchedule() {
       cycle_length[i] = constrain(cycle_length[i], 0, MAX_CYCLE_LENGTH);
       printStartTime(cycle_length[i]);
     }
+
+    lcd.setCursor(0, 1);
+    lcd.print(F("Enable"));
+    delay(DELAY_SCROLL);
+    while (true) {
+      buttons = lcd.readButtons();
+      if (buttons & BUTTON_RIGHT)
+        break;
+      else if ((buttons & BUTTON_UP) || (buttons & BUTTON_DOWN)) {
+        cycle_enabled[i] = !cycle_enabled[i];
+      }
+      lcd.setCursor(11, 1);
+      if (cycle_enabled[i])
+        lcd.print(F("On   "));
+      else
+        lcd.print(F("Off  "));
+    }
   }
 }
 
