@@ -39,16 +39,16 @@ void printMenuText(int selection) {
 
 void printTime() {
   unsigned long now =  millis();
-  while (now > (midnight + DAY_IN_MS))
+  while (now >= (midnight + DAY_IN_MS))
     midnight += DAY_IN_MS;
   unsigned long seconds = (now - midnight) / 1000UL;
   unsigned int minutes = 0;
   unsigned int hours = 0;
-  while (seconds > 60) {
+  while (seconds >= 60) {
     seconds -= 60;
     minutes++;
   }
-  while (minutes > 60) {
+  while (minutes >= 60) {
     minutes -= 60;
     hours++;
   }
