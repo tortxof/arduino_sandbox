@@ -88,12 +88,16 @@ void doSetTime() {
   while (true) {
     printTime();
     buttons = lcd.readButtons();
-    if (buttons & BUTTON_UP)
+    if (buttons & BUTTON_UP) {
       midnight += HOUR_IN_MS;
-    else if (buttons & BUTTON_DOWN)
+      delay(DELAY_SCROLL);
+    }
+    else if (buttons & BUTTON_DOWN) {
       midnight -= HOUR_IN_MS;
+      delay(DELAY_SCROLL);
+    }
     else if (buttons & BUTTON_RIGHT)
-      break;    
+      break;
   }
 
   lcd.setCursor(0, 1);
@@ -101,12 +105,16 @@ void doSetTime() {
   while (true) {
     printTime();
     buttons = lcd.readButtons();
-    if (buttons & BUTTON_UP)
+    if (buttons & BUTTON_UP) {
       midnight += MINUTE_IN_MS;
-    else if (buttons & BUTTON_DOWN)
+      delay(DELAY_SCROLL);
+    }
+    else if (buttons & BUTTON_DOWN) {
       midnight -= MINUTE_IN_MS;
+      delay(DELAY_SCROLL);
+    }
     else if (buttons & BUTTON_RIGHT)
-      break;    
+      break;
   }
 
   lcd.setCursor(0, 1);
@@ -114,15 +122,17 @@ void doSetTime() {
   while (true) {
     printTime();
     buttons = lcd.readButtons();
-    if (buttons & BUTTON_UP)
+    if (buttons & BUTTON_UP) {
       midnight += SECOND_IN_MS;
-    else if (buttons & BUTTON_DOWN)
+      delay(DELAY_SCROLL);
+    }
+    else if (buttons & BUTTON_DOWN) {
       midnight -= SECOND_IN_MS;
+      delay(DELAY_SCROLL);
+    }
     else if (buttons & BUTTON_RIGHT)
       break;    
   }
-
-  delay(DELAY_SPLASH);
 }
 
 void doSetSchedule() {
