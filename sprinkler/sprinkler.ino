@@ -97,7 +97,38 @@ void doMenuSelection(int selection) {
 void doManual() {
   lcd.clear();
   lcd.print(F("Manual"));
-  delay(DELAY_SPLASH);
+
+  int duration = 0;
+
+  lcd.setCursor(0, 1);
+  lcd.print(F("Duration"));
+
+  while (true) {
+    uint8_t buttons = lcd.readButtons();
+    printTime();
+    printStartTime(duration);
+    if (buttons & BUTTON_RIGHT)
+      break;
+    else if (buttons & BUTTON_UP)
+      duration++;
+    else if (buttons & BUTTON_DOWN)
+      duration--;
+    duration = constrain(duration, 0, MAX_CYCLE_LENGTH);
+    delay(DELAY_SCROLL);
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.print(F("On              "));
+
+  unsigned long start_time = getTime();
+  unsigned long now = start_time;
+  digitalWrite(VALVE_PIN, HIGH);
+  while (!lcd.readButtons() && (now - start_time < ((unsigned long)duration * 60UL))) {
+    printTime();
+    printStartTime((start_time + ((unsigned long)duration * 60UL) - now) / 60UL);
+    now = getTime();
+  }
+  digitalWrite(VALVE_PIN, LOW);
 }
 
 void doSetTime() {
@@ -280,6 +311,7 @@ void setup() {
   }
 
   lcd.begin(16, 2);
+  pinMode(VALVE_PIN, OUTPUT);
 }
 
 void loop() {
