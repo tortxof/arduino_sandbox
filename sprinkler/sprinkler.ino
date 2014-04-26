@@ -307,7 +307,7 @@ void setup() {
   for (int i = 0; i < NUM_CYCLES; i++) {
     start_time[i] = 0;
     cycle_length[i] = 30;
-    cycle_enabled[i] = true;
+    cycle_enabled[i] = false;
   }
 
   lcd.begin(16, 2);
