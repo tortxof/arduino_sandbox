@@ -164,10 +164,7 @@ void s_menu() {
     selection++;
   if (buttons & BUTTON_DOWN)
     selection--;
-  if (selection >= NUM_MENU_ITEMS)
-    selection = 0;
-  if (selection < 0)
-    selection = NUM_MENU_ITEMS - 1;
+  selection = constrain_wrap(selection, 0, NUM_MENU_ITEMS);
   printMenuText(selection);
   if (buttons & BUTTON_SELECT)
     menuSelect(selection);
