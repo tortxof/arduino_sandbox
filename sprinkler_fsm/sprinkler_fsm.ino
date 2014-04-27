@@ -297,7 +297,6 @@ void s_set_time_seconds() {
 }
 
 void s_set_sched_begin() {
-  set_cycle = 0;
   lcd.clear();
   lcd.print(F("Sched "));
   lcd.print(set_cycle + 1);
@@ -358,8 +357,9 @@ void s_set_sched_duration() {
 }
 
 void s_set_sched_enable() {
-  if (buttons & BUTTON_RIGHT)
-    state = s_menu_begin;
+  if (buttons & BUTTON_RIGHT) {
+    state = s_set_sched_end;
+  }
   else if ((buttons & BUTTON_UP) || (buttons & BUTTON_DOWN))
     cycle_enabled[set_cycle] = !cycle_enabled[set_cycle];
   lcd.setCursor(11, 1);
@@ -367,4 +367,15 @@ void s_set_sched_enable() {
     lcd.print(F("On   "));
   else
     lcd.print(F("Off  "));
+}
+
+void s_set_sched_end () {
+  if (set_cycle >= NUM_CYCLES - 1) {
+    set_cycle = 0;
+    state = s_menu_begin;
+  }
+  else {
+    set_cycle++;
+    state = s_set_sched_begin;
+  }
 }
