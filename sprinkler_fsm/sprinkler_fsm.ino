@@ -123,6 +123,21 @@ void menuSelect(int selection) {
 }
 
 void setup() {
+  // set midnight based on compile time
+  char time_str[] = __TIME__;
+  char buf[3];
+  buf[2] = byte(0);
+  buf[0] = time_str[0];
+  buf[1] = time_str[1];
+  int hour = atoi(buf);
+  buf[0] = time_str[3];
+  buf[1] = time_str[4];
+  int minute = atoi(buf);
+  buf[0] = time_str[6];
+  buf[1] = time_str[7];
+  int second = atoi(buf);
+  midnight = 0UL - ((unsigned long)hour * HOUR_IN_MS + (unsigned long)minute * MINUTE_IN_MS + (unsigned long)second * SECOND_IN_MS);
+
   // initialise auto vars
   for (int i = 0; i < NUM_CYCLES; i++) {
     start_time[i] = 0;
