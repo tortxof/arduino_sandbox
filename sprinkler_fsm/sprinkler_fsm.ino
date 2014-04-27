@@ -15,7 +15,7 @@
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 const int VALVE_PIN = 12;
-const int NUM_MENU_ITEMS = 4;
+const int NUM_MENU_ITEMS = 5;
 const int NUM_CYCLES = 4;
 const int MAX_CYCLE_LENGTH = 240; // minutes
 const int DEFAULT_MANUAL_DURATION = 30; // default for manual_duration
@@ -105,6 +105,8 @@ void printMenuText(int selection) {
     lcd.print(F("Set Schedule    "));
   if (selection == 3)
     lcd.print(F("Auto            "));
+  if (selection == 4)
+    lcd.print(F("Info            "));
 }
 
 void menuSelect(int selection) {
@@ -116,6 +118,8 @@ void menuSelect(int selection) {
     state = s_set_sched_begin;
   if (selection == 3)
     state = s_auto_begin;
+  if (selection == 4)
+    state = s_info_begin;
 }
 
 void setup() {
@@ -387,5 +391,31 @@ void s_set_sched_end () {
   else {
     set_cycle++;
     state = s_set_sched_begin;
+  }
+}
+
+void s_info_begin() {
+  lcd.clear();
+  lcd.print(F("Compiled"));
+  state = s_info;
+}
+
+void s_info() {
+  if (time - state_change_time > DELAY_SPLASH * 3)
+    state = s_menu_begin;
+  else if (time - state_change_time > DELAY_SPLASH * 2) {
+    lcd.home();
+    lcd.print(F("djones.co       "));
+    lcd.setCursor(0, 1);
+    lcd.print(F("/sprinkler      "));
+  }
+  else if (time - state_change_time > DELAY_SPLASH) {
+    lcd.setCursor(0, 1);
+    lcd.print(F(__TIME__));
+    lcd.print(F("        "));
+  }
+  else {
+    lcd.setCursor(0, 1);
+    lcd.print(F(__DATE__));
   }
 }
