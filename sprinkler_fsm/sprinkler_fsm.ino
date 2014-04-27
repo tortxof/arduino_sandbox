@@ -21,6 +21,7 @@ const int MAX_CYCLE_LENGTH = 240; // minutes
 const int DEFAULT_MANUAL_DURATION = 30; // default for manual_duration
 const int DELAY_SCROLL = 150;
 const int DELAY_SPLASH = 2000;
+const int DAY_IN_MINUTES = 1440;
 const unsigned long DAY_IN_MS = 86400000UL;
 const unsigned long HOUR_IN_MS = 3600000UL;
 const unsigned long MINUTE_IN_MS = 60000UL;
@@ -64,6 +65,15 @@ void printTime() {
   char time_str[9];
   sprintf(time_str, TIME_FORMAT, hours, minutes, seconds);
   lcd.print(time_str);
+}
+
+// like constrain but wraps. Unlike constrain, upper is non inclusive.
+int constrain_wrap(int i, int lower, int upper) {
+  while (i >= upper)
+    i -= upper;
+  while (i < 0)
+    i += upper;
+  return i;
 }
 
 // print time being set HH:MM
@@ -210,10 +220,7 @@ void s_manual_set() {
     manual_duration++;
   else if (buttons & BUTTON_DOWN)
     manual_duration--;
-  if (manual_duration > MAX_CYCLE_LENGTH)
-    manual_duration = 0;
-  if (manual_duration < 0)
-    manual_duration = MAX_CYCLE_LENGTH;
+  manual_duration = constrain_wrap(manual_duration, 0, MAX_CYCLE_LENGTH + 1);
   printSetTime(manual_duration);
 }
 
@@ -318,7 +325,7 @@ void s_set_sched_hour() {
   else if (buttons & BUTTON_DOWN) {
     start_time[set_cycle] -= 60;
   }
-  start_time[set_cycle] = constrain(start_time[set_cycle], 0, 1440);
+  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], 0, DAY_IN_MINUTES);
   printSetTime(start_time[set_cycle]);
 }
 
@@ -336,7 +343,7 @@ void s_set_sched_minute() {
   else if (buttons & BUTTON_DOWN) {
     start_time[set_cycle]--;
   }
-  start_time[set_cycle] = constrain(start_time[set_cycle], 0, 1440);
+  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], 0, DAY_IN_MINUTES);
   printSetTime(start_time[set_cycle]);
 }
 
@@ -352,7 +359,7 @@ void s_set_sched_duration() {
   else if (buttons & BUTTON_DOWN) {
     cycle_length[set_cycle]--;
   }
-  cycle_length[set_cycle] = constrain(cycle_length[set_cycle], 0, MAX_CYCLE_LENGTH);
+  cycle_length[set_cycle] = constrain_wrap(cycle_length[set_cycle], 0, MAX_CYCLE_LENGTH + 1);
   printSetTime(cycle_length[set_cycle]);
 }
 
