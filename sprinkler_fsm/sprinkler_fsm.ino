@@ -31,7 +31,6 @@ const char TIME_FORMAT[] = "%02d:%02d:%02d";
 unsigned long midnight = 0; // midnight, in the past, for comparison to time
 unsigned long time = 0; // time as returned by millis()
 unsigned long time_of_day = 0; // Seconds since midnight
-unsigned long manual_start_time = 0; // start time of manual cycle
 int manual_duration = DEFAULT_MANUAL_DURATION; // duration of manual cycle in minutes
 int set_cycle = 0; // current cycle being set in s_set_sched... states
 unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
@@ -40,6 +39,10 @@ boolean cycle_enabled[NUM_CYCLES];
 uint8_t buttons = 0; // button state
 
 void (*state)() = NULL;
+
+void (*previous_state)() = NULL;
+
+unsigned long state_change_time = 0;
 
 // updates time midnight and time_of_day
 void updateTime() {
@@ -133,6 +136,11 @@ void setup() {
 void loop() {
   updateTime();
 
+  if (state != previous_state) {
+    state_change_time = time;
+    previous_state = state;
+  }
+
   buttons = lcd.readButtons();
 
   state();
@@ -147,8 +155,7 @@ void s_splash_begin() {
 }
 
 void s_splash() {
-  static unsigned long time_begin = time;
-  if (time - time_begin > DELAY_SPLASH)
+  if (time - state_change_time > DELAY_SPLASH)
     state = s_menu_begin;
 }
 
@@ -226,13 +233,12 @@ void s_manual_wait_begin() {
   lcd.setCursor(0, 1);
   lcd.print(F("On              "));
   digitalWrite(VALVE_PIN, HIGH);
-  manual_start_time = time;
   state = s_manual_wait;
 }
 
 void s_manual_wait() {
   printTime();
-  unsigned long time_remaining = ((unsigned long)manual_duration * MINUTE_IN_MS) - (time - manual_start_time);
+  unsigned long time_remaining = ((unsigned long)manual_duration * MINUTE_IN_MS) - (time - state_change_time);
   if (time_remaining >= HOUR_IN_MS) { // if time_remaining is an hour or more, convert to minutes
     time_remaining = time_remaining / MINUTE_IN_MS; // convert from ms to minutes
   }
@@ -240,7 +246,7 @@ void s_manual_wait() {
     time_remaining = time_remaining / SECOND_IN_MS;// convert from ms to seconds
   }
   printSetTime((int)time_remaining);
-  if ((time - manual_start_time) > ((unsigned long)manual_duration * MINUTE_IN_MS))
+  if ((time - state_change_time) > ((unsigned long)manual_duration * MINUTE_IN_MS))
     state = s_manual_end;
   if (buttons)
     state = s_manual_end;
