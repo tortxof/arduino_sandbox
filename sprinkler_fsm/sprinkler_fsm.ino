@@ -26,7 +26,6 @@ const unsigned long DAY_IN_MS = 86400000UL;
 const unsigned long HOUR_IN_MS = 3600000UL;
 const unsigned long MINUTE_IN_MS = 60000UL;
 const unsigned long SECOND_IN_MS = 1000UL;
-const char TIME_FORMAT[] = "%02d:%02d:%02d";
 
 unsigned long midnight = 0; // midnight, in the past, for comparison to time
 unsigned long time = 0; // time as returned by millis()
@@ -67,7 +66,7 @@ void printTime() {
   }
   lcd.setCursor(8, 0);
   char time_str[9];
-  sprintf(time_str, TIME_FORMAT, hours, minutes, seconds);
+  sprintf(time_str, "%02d:%02d:%02d", hours, minutes, seconds);
   lcd.print(time_str);
 }
 
