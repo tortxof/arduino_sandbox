@@ -263,10 +263,10 @@ void s_set_time_begin() {
 
 void s_set_time_hours() {  
   printTime();
-  if (buttons & BUTTON_UP) {
+  if (buttons & BUTTON_DOWN) {
     midnight += HOUR_IN_MS;
   }
-  else if (buttons & BUTTON_DOWN) {
+  else if (buttons & BUTTON_UP) {
     midnight -= HOUR_IN_MS;
   }
   else if (buttons & BUTTON_RIGHT) {
@@ -278,10 +278,10 @@ void s_set_time_hours() {
 
 void s_set_time_minutes() {
   printTime();
-  if (buttons & BUTTON_UP) {
+  if (buttons & BUTTON_DOWN) {
     midnight += MINUTE_IN_MS;
   }
-  else if (buttons & BUTTON_DOWN) {
+  else if (buttons & BUTTON_UP) {
     midnight -= MINUTE_IN_MS;
   }
   else if (buttons & BUTTON_RIGHT) {
@@ -293,10 +293,10 @@ void s_set_time_minutes() {
 
 void s_set_time_seconds() {  
   printTime();
-  if (buttons & BUTTON_UP) {
+  if (buttons & BUTTON_DOWN) {
     midnight += SECOND_IN_MS;
   }
-  else if (buttons & BUTTON_DOWN) {
+  else if (buttons & BUTTON_UP) {
     midnight -= SECOND_IN_MS;
   }
   else if (buttons & BUTTON_RIGHT)
