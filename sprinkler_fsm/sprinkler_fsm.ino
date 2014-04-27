@@ -19,7 +19,7 @@ const int NUM_MENU_ITEMS = 4;
 const int NUM_CYCLES = 4;
 const int MAX_CYCLE_LENGTH = 240; // minutes
 const int DEFAULT_MANUAL_DURATION = 30; // default for manual_duration
-const int DELAY_SCROLL = 150;
+const int DELAY_SCROLL = 100;
 const int DELAY_SPLASH = 2000;
 const int DAY_IN_MINUTES = 1440;
 const unsigned long DAY_IN_MS = 86400000UL;
@@ -31,6 +31,7 @@ const char TIME_FORMAT[] = "%02d:%02d:%02d";
 unsigned long midnight = 0; // midnight, in the past, for comparison to time
 unsigned long time = 0; // time as returned by millis()
 unsigned long time_of_day = 0; // Seconds since midnight
+unsigned long manual_start_time = 0; // start time of manual cycle
 int manual_duration = DEFAULT_MANUAL_DURATION; // duration of manual cycle in minutes
 int set_cycle = 0; // current cycle being set in s_set_sched... states
 unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
@@ -225,13 +226,13 @@ void s_manual_wait_begin() {
   lcd.setCursor(0, 1);
   lcd.print(F("On              "));
   digitalWrite(VALVE_PIN, HIGH);
+  manual_start_time = time;
   state = s_manual_wait;
 }
 
 void s_manual_wait() {
-  static unsigned long start_time = time;
   printTime();
-  unsigned long time_remaining = ((unsigned long)manual_duration * MINUTE_IN_MS) - (time - start_time);
+  unsigned long time_remaining = ((unsigned long)manual_duration * MINUTE_IN_MS) - (time - manual_start_time);
   if (time_remaining >= HOUR_IN_MS) { // if time_remaining is an hour or more, convert to minutes
     time_remaining = time_remaining / MINUTE_IN_MS; // convert from ms to minutes
   }
@@ -239,7 +240,7 @@ void s_manual_wait() {
     time_remaining = time_remaining / SECOND_IN_MS;// convert from ms to seconds
   }
   printSetTime((int)time_remaining);
-  if ((time - start_time) > ((unsigned long)manual_duration * MINUTE_IN_MS))
+  if ((time - manual_start_time) > ((unsigned long)manual_duration * MINUTE_IN_MS))
     state = s_manual_end;
   if (buttons)
     state = s_manual_end;
