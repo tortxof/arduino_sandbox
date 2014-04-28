@@ -78,8 +78,8 @@ void printTime() {
   lcd.print(time_str);
 }
 
-// like constrain but wraps. Unlike constrain, upper is non inclusive.
-int constrain_wrap(int i, int lower, int upper) {
+// like constrain but wraps. Unlike constrain, upper is non inclusive. Lower bound is always zero.
+int constrain_wrap(int i, int upper) {
   while (i >= upper)
     i -= upper;
   while (i < 0)
@@ -215,7 +215,7 @@ void s_menu() {
     selection++;
   if (buttons & BUTTON_DOWN)
     selection--;
-  selection = constrain_wrap(selection, 0, NUM_MENU_ITEMS);
+  selection = constrain_wrap(selection, NUM_MENU_ITEMS);
   printMenuText(selection);
   if (buttons & BUTTON_SELECT)
     menuSelect(selection);
@@ -268,7 +268,7 @@ void s_manual_set() {
     manual_duration++;
   else if (buttons & BUTTON_DOWN)
     manual_duration--;
-  manual_duration = constrain_wrap(manual_duration, 0, MAX_CYCLE_LENGTH + 1);
+  manual_duration = constrain_wrap(manual_duration, MAX_CYCLE_LENGTH + 1);
   printSetTime(manual_duration);
 }
 
@@ -372,7 +372,7 @@ void s_set_sched_hour() {
   else if (buttons & BUTTON_DOWN) {
     start_time[set_cycle] -= 60;
   }
-  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], 0, DAY_IN_MINUTES);
+  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], DAY_IN_MINUTES);
   printSetTime(start_time[set_cycle]);
 }
 
@@ -390,7 +390,7 @@ void s_set_sched_minute() {
   else if (buttons & BUTTON_DOWN) {
     start_time[set_cycle]--;
   }
-  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], 0, DAY_IN_MINUTES);
+  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], DAY_IN_MINUTES);
   printSetTime(start_time[set_cycle]);
 }
 
@@ -406,7 +406,7 @@ void s_set_sched_duration() {
   else if (buttons & BUTTON_DOWN) {
     cycle_length[set_cycle]--;
   }
-  cycle_length[set_cycle] = constrain_wrap(cycle_length[set_cycle], 0, MAX_CYCLE_LENGTH + 1);
+  cycle_length[set_cycle] = constrain_wrap(cycle_length[set_cycle], MAX_CYCLE_LENGTH + 1);
   printSetTime(cycle_length[set_cycle]);
 }
 
