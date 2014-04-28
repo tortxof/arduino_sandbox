@@ -30,11 +30,19 @@ const unsigned long SECOND_IN_MS = 1000UL;
 unsigned long midnight = 0; // midnight, in the past, for comparison to time
 unsigned long time = 0; // time as returned by millis()
 unsigned long time_of_day = 0; // Seconds since midnight
+
 int manual_duration = DEFAULT_MANUAL_DURATION; // duration of manual cycle in minutes
+
 int set_cycle = 0; // current cycle being set in s_set_sched... states
+
 unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
 unsigned int cycle_length[NUM_CYCLES]; // length of each cycle in minutes
 boolean cycle_enabled[NUM_CYCLES];
+
+unsigned long last_button_time = 0;
+unsigned long backlight_timeout = 10000;
+boolean backlight_on = true;
+
 uint8_t buttons = 0; // button state
 
 void (*state)() = NULL;
@@ -122,6 +130,21 @@ void menuSelect(int selection) {
     state = s_info_begin;
 }
 
+void backlightState() {
+  if (!buttons && (time - last_button_time > backlight_timeout)) {
+    lcd.setBacklight(OFF);
+    backlight_on = false;
+  }
+  else if (buttons && backlight_on)
+    last_button_time = time;
+  else if (buttons && !backlight_on) {
+    last_button_time = time;
+    buttons = 0;
+    lcd.setBacklight(WHITE);
+    backlight_on  = true;
+  }
+}
+
 void setup() {
   // set midnight based on compile time
   char time_str[] = __TIME__;
@@ -160,6 +183,8 @@ void loop() {
   }
 
   buttons = lcd.readButtons();
+
+  backlightState();
 
   state();
 
