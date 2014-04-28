@@ -141,7 +141,7 @@ void backlightState() {
     last_button_time = time;
     buttons = 0;
     lcd.setBacklight(WHITE);
-    backlight_on  = true;
+    backlight_on = true;
   }
 }
 
