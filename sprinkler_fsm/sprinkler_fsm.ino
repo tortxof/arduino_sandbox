@@ -460,13 +460,20 @@ void s_info_begin() {
 }
 
 void s_info() {
-  if (time - state_change_time > DELAY_SPLASH * 3)
+  if (time - state_change_time > DELAY_SPLASH * 4)
     state = s_menu_begin;
-  else if (time - state_change_time > DELAY_SPLASH * 2) {
+  else if (time - state_change_time > DELAY_SPLASH * 3) {
     lcd.home();
     lcd.print(F("djones.co       "));
     lcd.setCursor(0, 1);
     lcd.print(F("/sprinkler      "));
+  }
+  else if (time - state_change_time > DELAY_SPLASH * 2) {
+    lcd.home();
+    lcd.print(F("EEPROM version  "));
+    lcd.setCursor(0, 1);
+    lcd.print(EEPROM_VERSION, 16);
+    lcd.print(F("            "));
   }
   else if (time - state_change_time > DELAY_SPLASH) {
     lcd.setCursor(0, 1);
