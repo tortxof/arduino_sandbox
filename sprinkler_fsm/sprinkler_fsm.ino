@@ -1,3 +1,4 @@
+#include <EEPROMex.h>
 #include <Wire.h>
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
@@ -14,8 +15,11 @@
 
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
+const uint8_t EEPROM_START = 32;
+const uint16_t EEPROM_VERSION = 0xcdd4; // This should change if NUM_CYCLES or struct Sched changes. Random.
+
 const int VALVE_PIN = 12;
-const int NUM_MENU_ITEMS = 5;
+const int NUM_MENU_ITEMS = 7;
 const int NUM_CYCLES = 4;
 const int MAX_CYCLE_LENGTH = 240; // minutes
 const int DEFAULT_MANUAL_DURATION = 30; // default for manual_duration
@@ -35,9 +39,16 @@ int manual_duration = DEFAULT_MANUAL_DURATION; // duration of manual cycle in mi
 
 int set_cycle = 0; // current cycle being set in s_set_sched... states
 
-unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
-unsigned int cycle_length[NUM_CYCLES]; // length of each cycle in minutes
-boolean cycle_enabled[NUM_CYCLES];
+struct Sched {
+  unsigned int start; // start times in minutes after midnight
+  unsigned int length; // length of each cycle in minutes
+  boolean enabled;
+} 
+mySched[NUM_CYCLES];
+
+// unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
+// unsigned int cycle_length[NUM_CYCLES]; // length of each cycle in minutes
+// boolean cycle_enabled[NUM_CYCLES];
 
 unsigned long last_button_time = 0;
 unsigned long backlight_timeout = 10000;
@@ -115,6 +126,10 @@ void printMenuText(int selection) {
     lcd.print(F("Auto            "));
   if (selection == 4)
     lcd.print(F("Info            "));
+  if (selection == 5)
+    lcd.print(F("Load Sched      "));
+  if (selection == 6)
+    lcd.print(F("Save Sched      "));
 }
 
 void menuSelect(int selection) {
@@ -128,6 +143,10 @@ void menuSelect(int selection) {
     state = s_auto_begin;
   if (selection == 4)
     state = s_info_begin;
+  if (selection == 5)
+    state = s_eeprom_load;
+  if (selection == 6)
+    state = s_eeprom_save;
 }
 
 void backlightState() {
@@ -163,9 +182,9 @@ void setup() {
 
   // initialise auto vars
   for (int i = 0; i < NUM_CYCLES; i++) {
-    start_time[i] = 0;
-    cycle_length[i] = 30;
-    cycle_enabled[i] = false;
+    mySched[i].start = 0;
+    mySched[i].length = 30;
+    mySched[i].enabled = false;
   }
 
   lcd.begin(16, 2);
@@ -231,7 +250,7 @@ void s_auto() {
   printTime();
   lcd.setCursor(0, 1);
   for (int i = 0; i < NUM_CYCLES; i++) {
-    if (cycle_enabled[i] && (time_of_day > ((unsigned long)start_time[i] * 60UL)) && (time_of_day < (unsigned long)(start_time[i] + cycle_length[i]) * 60UL)) {
+    if (mySched[i].enabled && (time_of_day > ((unsigned long)mySched[i].start * 60UL)) && (time_of_day < (unsigned long)(mySched[i].start + mySched[i].length) * 60UL)) {
       digitalWrite(VALVE_PIN, HIGH);
       lcd.print(i);
       lcd.print(F(":+ "));
@@ -367,13 +386,13 @@ void s_set_sched_hour() {
     state = s_set_sched_minute;
   }
   else if (buttons & BUTTON_UP) {
-    start_time[set_cycle] += 60;
+    mySched[set_cycle].start += 60;
   }
   else if (buttons & BUTTON_DOWN) {
-    start_time[set_cycle] -= 60;
+    mySched[set_cycle].start -= 60;
   }
-  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], DAY_IN_MINUTES);
-  printSetTime(start_time[set_cycle]);
+  mySched[set_cycle].start = constrain_wrap(mySched[set_cycle].start, DAY_IN_MINUTES);
+  printSetTime(mySched[set_cycle].start);
 }
 
 void s_set_sched_minute() {
@@ -385,13 +404,13 @@ void s_set_sched_minute() {
     state = s_set_sched_duration;
   }
   else if (buttons & BUTTON_UP) {
-    start_time[set_cycle]++;
+    mySched[set_cycle].start++;
   }
   else if (buttons & BUTTON_DOWN) {
-    start_time[set_cycle]--;
+    mySched[set_cycle].start--;
   }
-  start_time[set_cycle] = constrain_wrap(start_time[set_cycle], DAY_IN_MINUTES);
-  printSetTime(start_time[set_cycle]);
+  mySched[set_cycle].start = constrain_wrap(mySched[set_cycle].start, DAY_IN_MINUTES);
+  printSetTime(mySched[set_cycle].start);
 }
 
 void s_set_sched_duration() {
@@ -401,13 +420,13 @@ void s_set_sched_duration() {
     state = s_set_sched_enable;
   }
   else if (buttons & BUTTON_UP) {
-    cycle_length[set_cycle]++;
+    mySched[set_cycle].length++;
   }
   else if (buttons & BUTTON_DOWN) {
-    cycle_length[set_cycle]--;
+    mySched[set_cycle].length--;
   }
-  cycle_length[set_cycle] = constrain_wrap(cycle_length[set_cycle], MAX_CYCLE_LENGTH + 1);
-  printSetTime(cycle_length[set_cycle]);
+  mySched[set_cycle].length = constrain_wrap(mySched[set_cycle].length, MAX_CYCLE_LENGTH + 1);
+  printSetTime(mySched[set_cycle].length);
 }
 
 void s_set_sched_enable() {
@@ -415,9 +434,9 @@ void s_set_sched_enable() {
     state = s_set_sched_end;
   }
   else if ((buttons & BUTTON_UP) || (buttons & BUTTON_DOWN))
-    cycle_enabled[set_cycle] = !cycle_enabled[set_cycle];
+    mySched[set_cycle].enabled = !mySched[set_cycle].enabled;
   lcd.setCursor(11, 1);
-  if (cycle_enabled[set_cycle])
+  if (mySched[set_cycle].enabled)
     lcd.print(F("On   "));
   else
     lcd.print(F("Off  "));
@@ -458,4 +477,40 @@ void s_info() {
     lcd.setCursor(0, 1);
     lcd.print(F(__DATE__));
   }
+}
+
+void s_eeprom_save() {
+  lcd.clear();
+  lcd.print(F("Saving to EEPROM"));
+  int bytes_saved = EEPROM.writeBlock(EEPROM_START, mySched, NUM_CYCLES);
+  bytes_saved += EEPROM.writeBlock(EEPROM_START + bytes_saved, EEPROM_VERSION);
+  lcd.setCursor(0, 1);
+  lcd.print(bytes_saved);
+  lcd.print(F(" bytes saved"));
+  state = s_eeprom_wait;
+}
+
+void s_eeprom_load() {
+  lcd.clear();
+  lcd.print(F("Loading EEPROM"));
+  lcd.setCursor(0, 1);
+  Sched loadSched[NUM_CYCLES];
+  uint16_t loadVersion = 0;
+  int bytes_read = EEPROM.readBlock(EEPROM_START, loadSched, NUM_CYCLES);
+  bytes_read += EEPROM.readBlock(EEPROM_START + bytes_read, loadVersion);
+  if (loadVersion == EEPROM_VERSION) {
+    for (int i = 0; i < NUM_CYCLES; i++) {
+      mySched[i] = loadSched[i];
+    }
+    lcd.print(F("Load OK"));
+  }
+  else {
+    lcd.print(F("Version mismatch"));
+  }
+  state = s_eeprom_wait;
+}
+
+void s_eeprom_wait() {
+  if (buttons)
+    state = s_menu_begin;
 }
