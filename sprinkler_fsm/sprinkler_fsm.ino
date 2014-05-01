@@ -1,4 +1,4 @@
-#include <EEPROMex.h>
+#include <EEPROM.h>
 #include <Wire.h>
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
@@ -482,8 +482,21 @@ void s_info() {
 void s_eeprom_save() {
   lcd.clear();
   lcd.print(F("Saving to EEPROM"));
-  int bytes_saved = EEPROM.writeBlock(EEPROM_START, mySched, NUM_CYCLES);
-  bytes_saved += EEPROM.writeBlock(EEPROM_START + bytes_saved, EEPROM_VERSION);
+
+  int bytes_saved = 0;
+
+  int bytes_size = sizeof(mySched);
+  for (int i = 0; i < bytes_size; i++) {
+    EEPROM.write(EEPROM_START + i, *((char*)&mySched + i));
+  }
+  bytes_saved += bytes_size;
+
+  bytes_size = sizeof(EEPROM_VERSION);
+  for (int i = 0; i < bytes_size; i++) {
+    EEPROM.write(EEPROM_START + bytes_saved + i, *((char*)&EEPROM_VERSION + i));
+  }
+  bytes_saved += bytes_size;
+
   lcd.setCursor(0, 1);
   lcd.print(bytes_saved);
   lcd.print(F(" bytes saved"));
@@ -494,15 +507,30 @@ void s_eeprom_load() {
   lcd.clear();
   lcd.print(F("Loading EEPROM"));
   lcd.setCursor(0, 1);
+
   Sched loadSched[NUM_CYCLES];
   uint16_t loadVersion = 0;
-  int bytes_read = EEPROM.readBlock(EEPROM_START, loadSched, NUM_CYCLES);
-  bytes_read += EEPROM.readBlock(EEPROM_START + bytes_read, loadVersion);
+
+  int bytes_loaded = 0;
+
+  int bytes_size = sizeof(loadSched);
+  for (int i = 0; i < bytes_size; i++) {
+    *((char*)&loadSched + i) = EEPROM.read(EEPROM_START + i);
+  }
+  bytes_loaded += bytes_size;
+
+  bytes_size = sizeof(loadVersion);
+  for (int i = 0; i < bytes_size; i++) {
+    *((char*)&loadVersion + i) = EEPROM.read(EEPROM_START + bytes_loaded + i);
+  }
+  bytes_loaded += bytes_size;
+
   if (loadVersion == EEPROM_VERSION) {
     for (int i = 0; i < NUM_CYCLES; i++) {
       mySched[i] = loadSched[i];
     }
-    lcd.print(F("Load OK"));
+    lcd.print(bytes_loaded);
+    lcd.print(F(" bytes loaded"));
   }
   else {
     lcd.print(F("Version mismatch"));
