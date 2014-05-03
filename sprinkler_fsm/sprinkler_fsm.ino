@@ -248,20 +248,24 @@ void s_auto_begin() {
 }
 
 void s_auto() {
+  boolean valve_on = false;
   printTime();
   lcd.setCursor(0, 1);
   for (int i = 0; i < NUM_CYCLES; i++) {
     if (mySched[i].enabled && (time_of_day > ((unsigned long)mySched[i].start * 60UL)) && (time_of_day < (unsigned long)(mySched[i].start + mySched[i].length) * 60UL)) {
-      digitalWrite(VALVE_PIN, HIGH);
+      valve_on = true;
       lcd.print(i);
       lcd.print(F(":+ "));
     }
     else {
-      digitalWrite(VALVE_PIN, LOW);
       lcd.print(i);
       lcd.print(F(":- "));
     }
   }
+  if (valve_on)
+    digitalWrite(VALVE_PIN, HIGH);
+  else
+    digitalWrite(VALVE_PIN, LOW);
   if (buttons)
     state = s_auto_end;
 }
