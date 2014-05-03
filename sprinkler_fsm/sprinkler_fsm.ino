@@ -207,7 +207,8 @@ void loop() {
 
   state();
 
-  delay(DELAY_SCROLL);
+  while (millis() - time < DELAY_SCROLL)
+    delay(1);
 }
 
 void s_splash_begin() {
