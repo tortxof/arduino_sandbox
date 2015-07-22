@@ -43,7 +43,7 @@ struct Sched {
   unsigned int start; // start times in minutes after midnight
   unsigned int length; // length of each cycle in minutes
   boolean enabled;
-} 
+}
 mySched[NUM_CYCLES];
 
 // unsigned int start_time[NUM_CYCLES];  // start times in minutes after midnight
@@ -237,7 +237,7 @@ void s_menu() {
     selection--;
   selection = constrain_wrap(selection, NUM_MENU_ITEMS);
   printMenuText(selection);
-  if (buttons & BUTTON_SELECT)
+  if (buttons & BUTTON_RIGHT)
     menuSelect(selection);
 }
 
@@ -332,7 +332,7 @@ void s_set_time_begin() {
   state = s_set_time_hours;
 }
 
-void s_set_time_hours() {  
+void s_set_time_hours() {
   printTime();
   if (buttons & BUTTON_DOWN) {
     midnight += HOUR_IN_MS;
@@ -362,7 +362,7 @@ void s_set_time_minutes() {
   }
 }
 
-void s_set_time_seconds() {  
+void s_set_time_seconds() {
   printTime();
   if (buttons & BUTTON_DOWN) {
     midnight += SECOND_IN_MS;
