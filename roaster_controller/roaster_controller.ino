@@ -1,6 +1,6 @@
 #include <Wire.h>
-#include <Adafruit_MCP23017.h>
 #include <Adafruit_RGBLCDShield.h>
+#include <utility/Adafruit_MCP23017.h>
 
 // lcd backlight color
 #define OFF 0x0
